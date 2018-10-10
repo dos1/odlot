@@ -81,7 +81,7 @@ static TM_ACTION(Type) {
 	strncpy(data->text, text, data->pos++);
 	data->text[data->pos] = 0;
 	if (strcmp(data->text, text) != 0) {
-		TM_AddBackgroundAction(data->timeline, Type, NULL, 60 + random() % 60);
+		TM_AddBackgroundAction(data->timeline, Type, NULL, 60 + rand() % 60);
 	} else {
 		al_stop_sample_instance(data->kbd);
 	}

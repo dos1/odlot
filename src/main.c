@@ -32,7 +32,7 @@ static _Noreturn void derp(int sig) {
 int main(int argc, char** argv) {
 	signal(SIGSEGV, derp);
 
-	srandom(time(NULL));
+	srand(time(NULL));
 
 	al_set_org_name("dosowisko.net");
 	al_set_app_name(LIBSUPERDERPY_GAMENAME_PRETTY);
