@@ -63,7 +63,7 @@ deploy:linux-i686:
   when: on_success
   retry: 2
   environment:
-    name: itch-dev-linux-i686
+    name: itch-linux-i686
     url: https://dos.itch.io/odlot
   variables:
     GIT_STRATEGY: none
@@ -78,7 +78,7 @@ deploy:linux-amd64:
   when: on_success
   retry: 2
   environment:
-    name: itch-dev-linux-amd64
+    name: itch-linux-amd64
     url: https://dos.itch.io/odlot
   variables:
     GIT_STRATEGY: none
@@ -93,7 +93,7 @@ deploy:win32:
   when: on_success
   retry: 2
   environment:
-    name: itch-dev-win32
+    name: itch-win32
     url: https://dos.itch.io/odlot
   variables:
     GIT_STRATEGY: none
@@ -108,7 +108,7 @@ deploy:win64:
   when: on_success
   retry: 2
   environment:
-    name: itch-dev-win64
+    name: itch-win64
     url: https://dos.itch.io/odlot
   variables:
     GIT_STRATEGY: none
@@ -123,7 +123,7 @@ deploy:macos:
   when: on_success
   retry: 2
   environment:
-    name: itch-dev-macos
+    name: itch-macos
     url: https://dos.itch.io/odlot
   variables:
     GIT_STRATEGY: none
@@ -132,24 +132,3 @@ deploy:macos:
   script:
     - butler push utils/output/odlot-osx.zip dos/odlot:ci-macos --userversion `echo $CI_COMMIT_SHA | cut -c1-7`
 
-notify:success:
-  image: dosowisko/xmpp-muc-send
-  stage: notify
-  retry: 2
-  when: on_success
-  variables:
-    GIT_STRATEGY: none
-  dependencies: []
-  script:
-    - 'xmpp-muc-send -j "$XMPP_JID" -n "$XMPP_NICK" -p "$XMPP_PASSWORD" -r "$XMPP_ROOM" "Nowe buildy Odlotu: [`echo $CI_COMMIT_SHA | cut -c1-7`] $CI_COMMIT_TITLE"'
-
-notify:fail:
-  image: dosowisko/xmpp-muc-send
-  stage: notify
-  retry: 2
-  when: on_failure
-  variables:
-    GIT_STRATEGY: none
-  dependencies: []
-  script:
-    - 'xmpp-muc-send -j "$XMPP_JID" -n "$XMPP_NICK" -p "$XMPP_PASSWORD" -r "$XMPP_ROOM" "NIEPOWODZENIE (ODLOT): [`echo $CI_COMMIT_SHA | cut -c1-7`] $CI_COMMIT_TITLE $CI_PIPELINE_URL"'
