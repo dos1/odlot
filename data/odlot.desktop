@@ -1,0 +1,9 @@
+[Desktop Entry]
+Type=Application
+Version=1.0
+Name=ODLOT
+Exec=odlot
+Comment=ODLOT
+Icon=odlot
+Terminal=false
+Categories=Game;ArcadeGame;

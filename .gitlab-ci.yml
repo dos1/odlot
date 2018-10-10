@@ -1,0 +1,155 @@
+variables:
+  GIT_SUBMODULE_STRATEGY: normal
+
+stages:
+  - build
+  - deploy
+  - notify
+
+.artifacts: &artifacts
+  name: "odlot-$CI_JOB_NAME-$CI_COMMIT_SHA"
+  paths:
+    - utils/output/
+  expire_in: 15 minutes
+
+build:win64:
+  image: dosowisko/libsuperderpy-win64
+  stage: build
+  retry: 1
+  artifacts: *artifacts
+  script:
+    - cd utils
+    - ./package_win64.sh
+
+build:win32:
+  image: dosowisko/libsuperderpy-win32
+  stage: build
+  retry: 1
+  artifacts: *artifacts
+  script:
+    - cd utils
+    - ./package_win32.sh
+
+build:linux-amd64:
+  image: dosowisko/libsuperderpy-linux-amd64
+  stage: build
+  retry: 1
+  artifacts: *artifacts
+  script:
+    - cd utils
+    - NO_STEAM_RUNTIME=1 ./package_linux_amd64.sh
+
+build:linux-i686:
+  image: dosowisko/libsuperderpy-linux-i686
+  stage: build
+  retry: 1
+  artifacts: *artifacts
+  script:
+    - cd utils
+    - NO_STEAM_RUNTIME=1 ./package_linux_i686.sh
+
+build:macos:
+  image: dosowisko/libsuperderpy-macos
+  stage: build
+  retry: 1
+  artifacts: *artifacts
+  script:
+    - cd utils
+    - ./package_osx.sh
+
+deploy:linux-i686:
+  image: dosowisko/butler
+  stage: deploy
+  when: on_success
+  retry: 2
+  environment:
+    name: itch-dev-linux-i686
+    url: https://dos.itch.io/odlot
+  variables:
+    GIT_STRATEGY: none
+  dependencies:
+    - build:linux-i686
+  script:
+    - butler push utils/output/odlot-linux-i686.tar.gz dos/odlot:ci-linux-i686 --userversion `echo $CI_COMMIT_SHA | cut -c1-7`
+
+deploy:linux-amd64:
+  image: dosowisko/butler
+  stage: deploy
+  when: on_success
+  retry: 2
+  environment:
+    name: itch-dev-linux-amd64
+    url: https://dos.itch.io/odlot
+  variables:
+    GIT_STRATEGY: none
+  dependencies:
+    - build:linux-amd64
+  script:
+    - butler push utils/output/odlot-linux-amd64.tar.gz dos/odlot:ci-linux-amd64 --userversion `echo $CI_COMMIT_SHA | cut -c1-7`
+
+deploy:win32:
+  image: dosowisko/butler
+  stage: deploy
+  when: on_success
+  retry: 2
+  environment:
+    name: itch-dev-win32
+    url: https://dos.itch.io/odlot
+  variables:
+    GIT_STRATEGY: none
+  dependencies:
+    - build:win32
+  script:
+    - butler push utils/output/odlot-win32.zip dos/odlot:ci-win32 --userversion `echo $CI_COMMIT_SHA | cut -c1-7`
+
+deploy:win64:
+  image: dosowisko/butler
+  stage: deploy
+  when: on_success
+  retry: 2
+  environment:
+    name: itch-dev-win64
+    url: https://dos.itch.io/odlot
+  variables:
+    GIT_STRATEGY: none
+  dependencies:
+    - build:win64
+  script:
+    - butler push utils/output/odlot-win64.zip dos/odlot:ci-win64 --userversion `echo $CI_COMMIT_SHA | cut -c1-7`
+
+deploy:macos:
+  image: dosowisko/butler
+  stage: deploy
+  when: on_success
+  retry: 2
+  environment:
+    name: itch-dev-macos
+    url: https://dos.itch.io/odlot
+  variables:
+    GIT_STRATEGY: none
+  dependencies:
+    - build:macos
+  script:
+    - butler push utils/output/odlot-osx.zip dos/odlot:ci-macos --userversion `echo $CI_COMMIT_SHA | cut -c1-7`
+
+notify:success:
+  image: dosowisko/xmpp-muc-send
+  stage: notify
+  retry: 2
+  when: on_success
+  variables:
+    GIT_STRATEGY: none
+  dependencies: []
+  script:
+    - 'xmpp-muc-send -j "$XMPP_JID" -n "$XMPP_NICK" -p "$XMPP_PASSWORD" -r "$XMPP_ROOM" "Nowe buildy Odlotu: [`echo $CI_COMMIT_SHA | cut -c1-7`] $CI_COMMIT_TITLE"'
+
+notify:fail:
+  image: dosowisko/xmpp-muc-send
+  stage: notify
+  retry: 2
+  when: on_failure
+  variables:
+    GIT_STRATEGY: none
+  dependencies: []
+  script:
+    - 'xmpp-muc-send -j "$XMPP_JID" -n "$XMPP_NICK" -p "$XMPP_PASSWORD" -r "$XMPP_ROOM" "NIEPOWODZENIE (ODLOT): [`echo $CI_COMMIT_SHA | cut -c1-7`] $CI_COMMIT_TITLE $CI_PIPELINE_URL"'
