@@ -34,21 +34,23 @@ int main(int argc, char** argv) {
 
 	srand(time(NULL));
 
-	al_set_org_name("dosowisko.net");
+	al_set_org_name("Holy Pangolin");
 	al_set_app_name(LIBSUPERDERPY_GAMENAME_PRETTY);
 
-	struct Game* game = libsuperderpy_init(argc, argv, LIBSUPERDERPY_GAMENAME, (struct Viewport){320, 180});
+	struct Game* game = libsuperderpy_init(argc, argv, LIBSUPERDERPY_GAMENAME, (struct Viewport){1920, 1080});
 	if (!game) { return 1; }
 
 	al_set_window_title(game->display, LIBSUPERDERPY_GAMENAME_PRETTY);
 
-	LoadGamestate(game, "dosowisko");
-	StartGamestate(game, "dosowisko");
+	LoadGamestate(game, "logo");
+	LoadGamestate(game, "myszka");
+	StartGamestate(game, "logo");
 
 	game->data = CreateGameData(game);
 
 	game->handlers.event = GlobalEventHandler;
 	game->handlers.destroy = DestroyGameData;
+	game->handlers.compositor = Compositor;
 
 	return libsuperderpy_run(game);
 }

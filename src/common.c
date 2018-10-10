@@ -21,6 +21,37 @@
 #include "common.h"
 #include <libsuperderpy.h>
 
+void Compositor(struct Game* game, struct Gamestate* gamestates) {
+	struct Gamestate* tmp = gamestates;
+	int counter = 0;
+	while (tmp) {
+		if ((tmp->loaded) && (tmp->started)) {
+			counter++;
+		}
+		tmp = tmp->next;
+	}
+	tmp = gamestates;
+	while (tmp) {
+		al_use_shader(game->data->grain);
+		al_set_shader_float("time", al_get_time()); //data->blink_counter/3600.0);
+		if ((tmp->loaded) && (tmp->started)) {
+			float randx = (rand() / (double)RAND_MAX) * 3.0;
+			float randy = (rand() / (double)RAND_MAX) * 3.0;
+			if (rand() % 200) {
+				randx = 0;
+				randy = 0;
+			}
+
+			float color = 1.0 + (rand() / (double)RAND_MAX) * 0.01 - 0.005;
+
+			al_draw_tinted_scaled_rotated_bitmap(tmp->fb, al_map_rgba_f(color, color, color, color), al_get_bitmap_width(tmp->fb) / 2.0, al_get_bitmap_height(tmp->fb) / 2.0,
+				al_get_display_width(game->display) / 2.0 + randx, al_get_display_height(game->display) / 2.0 + randy, 1.05, 1.05, 0.0, 0);
+		}
+		al_use_shader(NULL);
+		tmp = tmp->next;
+	}
+}
+
 bool GlobalEventHandler(struct Game* game, ALLEGRO_EVENT* ev) {
 	if ((ev->type == ALLEGRO_EVENT_KEY_DOWN) && (ev->keyboard.keycode == ALLEGRO_KEY_M)) {
 		game->config.mute = !game->config.mute;
@@ -51,9 +82,11 @@ bool GlobalEventHandler(struct Game* game, ALLEGRO_EVENT* ev) {
 
 struct CommonResources* CreateGameData(struct Game* game) {
 	struct CommonResources* data = calloc(1, sizeof(struct CommonResources));
+	data->grain = CreateShader(game, GetDataFilePath(game, "shaders/vertex.glsl"), GetDataFilePath(game, "shaders/grain.glsl"));
 	return data;
 }
 
 void DestroyGameData(struct Game* game) {
+	DestroyShader(game, game->data->grain);
 	free(game->data);
 }
