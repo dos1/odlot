@@ -42,11 +42,13 @@ int main(int argc, char** argv) {
 
 	al_set_window_title(game->display, LIBSUPERDERPY_GAMENAME_PRETTY);
 
-	LoadGamestate(game, "logo");
 	LoadGamestate(game, "myszka");
+
+	LoadGamestate(game, "logo");
 	LoadGamestate(game, "intro");
 	LoadGamestate(game, "bongo");
 	LoadGamestate(game, "taniec");
+	LoadGamestate(game, "pudelko");
 	StartGamestate(game, "intro");
 
 	game->data = CreateGameData(game);
