@@ -51,7 +51,7 @@ void Gamestate_Tick(struct Game* game, struct GamestateResources* data) {
 	data->counter++;
 	float pos = al_get_audio_stream_position_secs(data->taniec) / al_get_audio_stream_length_secs(data->taniec);
 	if (pos >= 1.0) {
-		game->data->next = strdup("pudelko");
+		game->data->next = strdup("rave");
 		SwitchCurrentGamestate(game, "myszka");
 	}
 	if (data->counter % 20 == 0) {

@@ -43,7 +43,7 @@ void Gamestate_Tick(struct Game* game, struct GamestateResources* data) {
 	// Here you should do all your game logic as if <delta> seconds have passed.
 	data->counter++;
 	if (data->counter == 60 * 5) {
-		game->data->next = strdup("ciuchcia");
+		game->data->next = strdup("pudelko");
 		SwitchCurrentGamestate(game, "myszka");
 	}
 }
