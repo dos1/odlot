@@ -34,8 +34,10 @@ void Gamestate_Logic(struct Game* game, struct GamestateResources* data, double 
 
 void Gamestate_Draw(struct Game* game, struct GamestateResources* data) {
 	Compositor(game, game->_priv.gamestates);
-	/*	al_draw_filled_rectangle(0, al_get_display_height(game->display) * 0.98, al_get_display_width(game->display), al_get_display_height(game->display), al_map_rgba(32, 32, 32, 32));
-	al_draw_filled_rectangle(0, al_get_display_height(game->display) * 0.98, game->loading_progress * al_get_display_width(game->display), al_get_display_height(game->display), al_map_rgba(128, 128, 128, 128));*/
+	if (game->data->first_load) {
+		al_draw_filled_rectangle(al_get_display_width(game->display) * 0.2, al_get_display_height(game->display) * 0.49, al_get_display_width(game->display) * 0.8, al_get_display_height(game->display) * 0.51, al_map_rgba(32, 32, 32, 32));
+		al_draw_filled_rectangle(al_get_display_width(game->display) * 0.2, al_get_display_height(game->display) * 0.49, game->loading_progress * al_get_display_width(game->display) * 0.6 + al_get_display_width(game->display) * 0.2, al_get_display_height(game->display) * 0.51, al_map_rgba(128, 128, 128, 128));
+	}
 };
 
 void* Gamestate_Load(struct Game* game, void (*progress)(struct Game*)) {

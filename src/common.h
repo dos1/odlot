@@ -22,6 +22,8 @@ struct CommonResources {
 	// Fill in with common data accessible from all gamestates.
 	ALLEGRO_SHADER* grain;
 	double mouseX, mouseY;
+	bool first_load;
+	char* next;
 };
 
 void DrawTexturedRectangle(float x1, float y1, float x2, float y2, ALLEGRO_COLOR color);

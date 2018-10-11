@@ -210,6 +210,7 @@ void Gamestate_Start(struct Game* game, struct GamestateResources* data) {
 	data->unlocked = false;
 	data->odlatuje = false;
 	data->distance = -1;
+	game->data->first_load = false;
 	al_show_mouse_cursor(game->display);
 }
 

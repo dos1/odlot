@@ -44,12 +44,12 @@ void Gamestate_Logic(struct Game* game, struct GamestateResources* data, double 
 
 void Gamestate_Tick(struct Game* game, struct GamestateResources* data) {
 	// Here you should do all your game logic as if <delta> seconds have passed.
-	if (data->counter == 20) {
+	if (data->counter == 40) {
 		if ((data->user[0] == data->seq[0]) &&
 			(data->user[1] == data->seq[1]) &&
 			(data->user[2] == data->seq[2]) &&
 			(data->user[3] == data->seq[3])) {
-			SwitchCurrentGamestate(game, "intro");
+			SwitchCurrentGamestate(game, "taniec");
 			return;
 		}
 
@@ -61,15 +61,15 @@ void Gamestate_Tick(struct Game* game, struct GamestateResources* data) {
 		al_stop_sample_instance(data->bongo[data->seq[0]]);
 		al_play_sample_instance(data->bongo[data->seq[0]]);
 	}
-	if (data->counter == 50) {
+	if (data->counter == 70) {
 		al_stop_sample_instance(data->bongo[data->seq[1]]);
 		al_play_sample_instance(data->bongo[data->seq[1]]);
 	}
-	if (data->counter == 80) {
+	if (data->counter == 100) {
 		al_stop_sample_instance(data->bongo[data->seq[2]]);
 		al_play_sample_instance(data->bongo[data->seq[2]]);
 	}
-	if (data->counter == 110) {
+	if (data->counter == 130) {
 		al_stop_sample_instance(data->bongo[data->seq[3]]);
 		al_play_sample_instance(data->bongo[data->seq[3]]);
 		al_show_mouse_cursor(game->display);
@@ -79,7 +79,7 @@ void Gamestate_Tick(struct Game* game, struct GamestateResources* data) {
 
 void Gamestate_Draw(struct Game* game, struct GamestateResources* data) {
 	// Draw everything to the screen here.
-	if (data->counter > 110) {
+	if (data->counter > 130) {
 		al_draw_bitmap(data->bg, 0, 0, 0);
 	}
 }
@@ -93,7 +93,7 @@ void Gamestate_ProcessEvent(struct Game* game, struct GamestateResources* data, 
 	}
 
 	if (ev->type == ALLEGRO_EVENT_MOUSE_BUTTON_DOWN) {
-		if (data->counter < 110) {
+		if (data->counter < 130) {
 			return;
 		}
 		int x = (int)(game->data->mouseX * 1920);
@@ -118,7 +118,7 @@ void Gamestate_ProcessEvent(struct Game* game, struct GamestateResources* data, 
 			data->current++;
 			if (data->current == 4) {
 				data->current = 0;
-				data->counter = -40;
+				data->counter = -20;
 				al_hide_mouse_cursor(game->display);
 			}
 		}

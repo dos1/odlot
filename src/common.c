@@ -128,6 +128,7 @@ bool GlobalEventHandler(struct Game* game, ALLEGRO_EVENT* ev) {
 struct CommonResources* CreateGameData(struct Game* game) {
 	struct CommonResources* data = calloc(1, sizeof(struct CommonResources));
 	data->grain = CreateShader(game, GetDataFilePath(game, "shaders/vertex.glsl"), GetDataFilePath(game, "shaders/grain.glsl"));
+	data->first_load = true;
 	return data;
 }
 
