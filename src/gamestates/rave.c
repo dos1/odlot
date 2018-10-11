@@ -24,7 +24,7 @@
 struct GamestateResources {
 	// This struct is for every resource allocated and used by your gamestate.
 	// It gets created on load and then gets passed around to all other function calls.
-	struct Character* altanka;
+	struct Character* rave;
 	ALLEGRO_AUDIO_STREAM* music;
 
 	int state;
@@ -36,21 +36,21 @@ int Gamestate_ProgressCount = 5; // number of loading steps as reported by Games
 
 void Gamestate_Logic(struct Game* game, struct GamestateResources* data, double delta) {
 	// Here you should do all your game logic as if <delta> seconds have passed.
-	AnimateCharacter(game, data->altanka, delta, 1.0);
+	AnimateCharacter(game, data->rave, delta, 1.0);
 }
 
 void Gamestate_Tick(struct Game* game, struct GamestateResources* data) {
 	// Here you should do all your game logic as if <delta> seconds have passed.
 	data->counter++;
-	if (data->counter == (int)(60 * 3.2)) {
-		game->data->next = strdup("rave");
+	if (data->counter == 60 * 5) {
+		game->data->next = strdup("intro");
 		SwitchCurrentGamestate(game, "myszka");
 	}
 }
 
 void Gamestate_Draw(struct Game* game, struct GamestateResources* data) {
 	// Draw everything to the screen here.
-	DrawCharacter(game, data->altanka);
+	DrawCharacter(game, data->rave);
 }
 
 void Gamestate_ProcessEvent(struct Game* game, struct GamestateResources* data, ALLEGRO_EVENT* ev) {
@@ -72,15 +72,15 @@ void* Gamestate_Load(struct Game* game, void (*progress)(struct Game*)) {
 	struct GamestateResources* data = calloc(1, sizeof(struct GamestateResources));
 	progress(game); // report that we progressed with the loading, so the engine can move a progress bar
 
-	data->music = al_load_audio_stream(GetDataFilePath(game, "myszki.flac"), 4, 2048);
+	data->music = al_load_audio_stream(GetDataFilePath(game, "rave.flac"), 4, 2048);
 	al_set_audio_stream_playing(data->music, false);
 	al_set_audio_stream_playmode(data->music, ALLEGRO_PLAYMODE_LOOP);
-	al_set_audio_stream_gain(data->music, 1.0);
+	al_set_audio_stream_gain(data->music, 1.5);
 	al_attach_audio_stream_to_mixer(data->music, game->audio.music);
 
-	data->altanka = CreateCharacter(game, "altanka");
-	RegisterSpritesheet(game, data->altanka, "altanka");
-	LoadSpritesheets(game, data->altanka, progress);
+	data->rave = CreateCharacter(game, "rave");
+	RegisterSpritesheet(game, data->rave, "niebieski_z_tlem");
+	LoadSpritesheets(game, data->rave, progress);
 
 	return data;
 }
@@ -97,7 +97,7 @@ void Gamestate_Start(struct Game* game, struct GamestateResources* data) {
 	// playing music etc.
 	al_show_mouse_cursor(game->display);
 	al_set_audio_stream_playing(data->music, true);
-	SetCharacterPosition(game, data->altanka, 1920 / 2.0, 1080 / 2.0, 0);
+	SetCharacterPosition(game, data->rave, 1920 / 2.0, 1080 / 2.0, 0);
 	data->counter = 0;
 	data->state = 0;
 }

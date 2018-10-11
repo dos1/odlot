@@ -51,6 +51,7 @@ int main(int argc, char** argv) {
 	LoadGamestate(game, "intro");
 	LoadGamestate(game, "logo");
 	LoadGamestate(game, "pudelko");
+	LoadGamestate(game, "rave");
 	LoadGamestate(game, "taniec");
 
 	StartGamestate(game, "intro");
