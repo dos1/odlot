@@ -26,7 +26,8 @@ struct GamestateResources {
 	// It gets created on load and then gets passed around to all other function calls.
 	struct Character* rave;
 	ALLEGRO_AUDIO_STREAM* music;
-
+	ALLEGRO_SAMPLE_INSTANCE* sound;
+	ALLEGRO_SAMPLE* sample;
 	int state;
 
 	int counter;
@@ -36,15 +37,19 @@ int Gamestate_ProgressCount = 5; // number of loading steps as reported by Games
 
 void Gamestate_Logic(struct Game* game, struct GamestateResources* data, double delta) {
 	// Here you should do all your game logic as if <delta> seconds have passed.
-	AnimateCharacter(game, data->rave, delta, 1.0);
+	if (data->state) {
+		AnimateCharacter(game, data->rave, delta, 1.0);
+	}
 }
 
 void Gamestate_Tick(struct Game* game, struct GamestateResources* data) {
 	// Here you should do all your game logic as if <delta> seconds have passed.
-	data->counter++;
-	if (data->counter == 60 * 5) {
-		game->data->next = strdup("pudelko");
-		SwitchCurrentGamestate(game, "myszka");
+	if (data->state) {
+		data->counter++;
+		if (data->counter == 60 * 5) {
+			game->data->next = strdup("pudelko");
+			SwitchCurrentGamestate(game, "myszka");
+		}
 	}
 }
 
@@ -59,6 +64,14 @@ void Gamestate_ProcessEvent(struct Game* game, struct GamestateResources* data, 
 	if ((ev->type == ALLEGRO_EVENT_KEY_DOWN) && (ev->keyboard.keycode == ALLEGRO_KEY_ESCAPE)) {
 		UnloadCurrentGamestate(game); // mark this gamestate to be stopped and unloaded
 		// When there are no active gamestates, the engine will quit.
+	}
+
+	if (ev->type == ALLEGRO_EVENT_MOUSE_BUTTON_DOWN) {
+		if (!data->state) {
+			data->state++;
+			al_set_audio_stream_playing(data->music, true);
+			al_stop_sample_instance(data->sound);
+		}
 	}
 }
 
@@ -78,6 +91,11 @@ void* Gamestate_Load(struct Game* game, void (*progress)(struct Game*)) {
 	al_set_audio_stream_gain(data->music, 1.5);
 	al_attach_audio_stream_to_mixer(data->music, game->audio.music);
 
+	data->sample = al_load_sample(GetDataFilePath(game, "silence.flac"));
+	data->sound = al_create_sample_instance(data->sample);
+	al_attach_sample_instance_to_mixer(data->sound, game->audio.music);
+	al_set_sample_instance_playmode(data->sound, ALLEGRO_PLAYMODE_LOOP);
+
 	data->rave = CreateCharacter(game, "rave");
 	RegisterSpritesheet(game, data->rave, "niebieski_z_tlem");
 	LoadSpritesheets(game, data->rave, progress);
@@ -96,7 +114,7 @@ void Gamestate_Start(struct Game* game, struct GamestateResources* data) {
 	// Called when this gamestate gets control. Good place for initializing state,
 	// playing music etc.
 	al_show_mouse_cursor(game->display);
-	al_set_audio_stream_playing(data->music, true);
+	al_play_sample_instance(data->sound);
 	SetCharacterPosition(game, data->rave, 1920 / 2.0, 1080 / 2.0, 0);
 	data->counter = 0;
 	data->state = 0;
