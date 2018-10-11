@@ -46,6 +46,7 @@ int main(int argc, char** argv) {
 
 	LoadGamestate(game, "bongo");
 	LoadGamestate(game, "but");
+	LoadGamestate(game, "gaski");
 	LoadGamestate(game, "intro");
 	LoadGamestate(game, "logo");
 	LoadGamestate(game, "pudelko");
