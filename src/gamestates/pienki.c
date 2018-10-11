@@ -24,10 +24,11 @@
 struct GamestateResources {
 	// This struct is for every resource allocated and used by your gamestate.
 	// It gets created on load and then gets passed around to all other function calls.
-	struct Character* pudelko;
+	struct Character* pienki;
 	ALLEGRO_AUDIO_STREAM* music;
-	ALLEGRO_SAMPLE_INSTANCE* sound[3];
-	ALLEGRO_SAMPLE* sample[3];
+
+	ALLEGRO_SAMPLE* sample;
+	ALLEGRO_SAMPLE_INSTANCE* pac;
 
 	int state;
 
@@ -38,22 +39,16 @@ int Gamestate_ProgressCount = 5; // number of loading steps as reported by Games
 
 void Gamestate_Logic(struct Game* game, struct GamestateResources* data, double delta) {
 	// Here you should do all your game logic as if <delta> seconds have passed.
-	AnimateCharacter(game, data->pudelko, delta, 1.0);
+	//AnimateCharacter(game, data->pienki, delta, 1.0);
 }
 
 void Gamestate_Tick(struct Game* game, struct GamestateResources* data) {
 	// Here you should do all your game logic as if <delta> seconds have passed.
-	if (data->state >= 3) {
-		data->counter++;
-		if (data->counter == 60 * 2) {
-			SwitchCurrentGamestate(game, "pienki");
-		}
-	}
 }
 
 void Gamestate_Draw(struct Game* game, struct GamestateResources* data) {
 	// Draw everything to the screen here.
-	DrawCharacter(game, data->pudelko);
+	DrawCharacter(game, data->pienki);
 }
 
 void Gamestate_ProcessEvent(struct Game* game, struct GamestateResources* data, ALLEGRO_EVENT* ev) {
@@ -63,23 +58,13 @@ void Gamestate_ProcessEvent(struct Game* game, struct GamestateResources* data, 
 		UnloadCurrentGamestate(game); // mark this gamestate to be stopped and unloaded
 		// When there are no active gamestates, the engine will quit.
 	}
-
 	if (ev->type == ALLEGRO_EVENT_MOUSE_BUTTON_DOWN) {
-		data->state++;
-		if (data->state == 1) {
-			SelectSpritesheet(game, data->pudelko, "pudelko1");
-			al_stop_sample_instance(data->sound[0]);
-			al_play_sample_instance(data->sound[0]);
-		}
-		if (data->state == 2) {
-			SelectSpritesheet(game, data->pudelko, "pudelko2");
-			al_stop_sample_instance(data->sound[1]);
-			al_play_sample_instance(data->sound[1]);
-		}
-		if (data->state == 3) {
-			SelectSpritesheet(game, data->pudelko, "pudelko3");
-			al_stop_sample_instance(data->sound[2]);
-			al_play_sample_instance(data->sound[2]);
+		AnimateCharacter(game, data->pienki, 1.0, 1.0);
+		data->counter++;
+		al_stop_sample_instance(data->pac);
+		al_play_sample_instance(data->pac);
+		if (data->counter == 5) {
+			SwitchCurrentGamestate(game, "altanka");
 		}
 	}
 }
@@ -94,26 +79,21 @@ void* Gamestate_Load(struct Game* game, void (*progress)(struct Game*)) {
 	struct GamestateResources* data = calloc(1, sizeof(struct GamestateResources));
 	progress(game); // report that we progressed with the loading, so the engine can move a progress bar
 
-	data->music = al_load_audio_stream(GetDataFilePath(game, "bongobg.flac"), 4, 2048);
+	data->music = al_load_audio_stream(GetDataFilePath(game, "pienki.flac"), 4, 2048);
 	al_set_audio_stream_playing(data->music, false);
 	al_set_audio_stream_playmode(data->music, ALLEGRO_PLAYMODE_LOOP);
-	al_set_audio_stream_gain(data->music, 0.5);
+	al_set_audio_stream_gain(data->music, 1.0);
 	al_attach_audio_stream_to_mixer(data->music, game->audio.music);
 
-	for (int i = 0; i < 3; i++) {
-		data->sample[i] = al_load_sample(GetDataFilePath(game, PunchNumber(game, "pudelkoX.flac", 'X', i + 1)));
-		data->sound[i] = al_create_sample_instance(data->sample[i]);
-		al_attach_sample_instance_to_mixer(data->sound[i], game->audio.fx);
-		al_set_sample_instance_playmode(data->sound[i], ALLEGRO_PLAYMODE_ONCE);
-	}
+	data->sample = al_load_sample(GetDataFilePath(game, "pac.flac"));
+	data->pac = al_create_sample_instance(data->sample);
+	al_attach_sample_instance_to_mixer(data->pac, game->audio.fx);
+	al_set_sample_instance_gain(data->pac, 0.5);
+	al_set_sample_instance_playmode(data->pac, ALLEGRO_PLAYMODE_ONCE);
 
-	data->pudelko = CreateCharacter(game, "pudelko");
-	RegisterSpritesheet(game, data->pudelko, "pudelko");
-	RegisterSpritesheet(game, data->pudelko, "pudelko1");
-	RegisterSpritesheet(game, data->pudelko, "pudelko2");
-	RegisterSpritesheet(game, data->pudelko, "pudelko3");
-	LoadSpritesheets(game, data->pudelko, progress);
-	SelectSpritesheet(game, data->pudelko, "pudelko");
+	data->pienki = CreateCharacter(game, "pienki");
+	RegisterSpritesheet(game, data->pienki, "pienki_myszka");
+	LoadSpritesheets(game, data->pienki, progress);
 
 	return data;
 }
@@ -130,7 +110,7 @@ void Gamestate_Start(struct Game* game, struct GamestateResources* data) {
 	// playing music etc.
 	al_show_mouse_cursor(game->display);
 	al_set_audio_stream_playing(data->music, true);
-	SetCharacterPosition(game, data->pudelko, 1920 / 2.0, 1080 / 2.0, 0);
+	SetCharacterPosition(game, data->pienki, 1920 / 2.0, 1080 / 2.0, 0);
 	data->counter = 0;
 	data->state = 0;
 }
