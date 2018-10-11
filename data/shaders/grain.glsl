@@ -17,7 +17,7 @@ uniform float time;
 // 0: Addition, 1: Screen, 2: Overlay, 3: Soft Light, 4: Lighten-Only
 #define BLEND_MODE 0
 #define SPEED 2.0
-#define INTENSITY 0.075
+#define INTENSITY 0.085
 // What gray level noise should tend to.
 #define MEAN 0.5
 // Controls the contrast/variance of noise.

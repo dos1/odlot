@@ -45,10 +45,12 @@ int main(int argc, char** argv) {
 	LoadGamestate(game, "logo");
 	LoadGamestate(game, "myszka");
 	LoadGamestate(game, "intro");
-	StartGamestate(game, "intro");
+	LoadGamestate(game, "bongo");
+	StartGamestate(game, "bongo");
 
 	game->data = CreateGameData(game);
 
+	game->show_loading_on_launch = true;
 	game->handlers.event = GlobalEventHandler;
 	game->handlers.destroy = DestroyGameData;
 	game->handlers.compositor = Compositor;

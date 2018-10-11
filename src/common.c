@@ -21,6 +21,35 @@
 #include "common.h"
 #include <libsuperderpy.h>
 
+void DrawTexturedRectangle(float x1, float y1, float x2, float y2, ALLEGRO_COLOR color) {
+	ALLEGRO_VERTEX vtx[4];
+	int ii;
+
+	vtx[0].x = x1;
+	vtx[0].y = y1;
+	vtx[0].u = 0.0;
+	vtx[0].v = 0.0;
+	vtx[1].x = x1;
+	vtx[1].y = y2;
+	vtx[1].u = 0.0;
+	vtx[1].v = 1.0;
+	vtx[2].x = x2;
+	vtx[2].y = y2;
+	vtx[2].u = 1.0;
+	vtx[2].v = 1.0;
+	vtx[3].x = x2;
+	vtx[3].y = y1;
+	vtx[3].u = 1.0;
+	vtx[3].v = 0.0;
+
+	for (ii = 0; ii < 4; ii++) {
+		vtx[ii].color = color;
+		vtx[ii].z = 0;
+	}
+
+	al_draw_prim(vtx, 0, 0, 0, 4, ALLEGRO_PRIM_TRIANGLE_FAN);
+}
+
 void Compositor(struct Game* game, struct Gamestate* gamestates) {
 	struct Gamestate* tmp = gamestates;
 	int counter = 0;
@@ -31,6 +60,17 @@ void Compositor(struct Game* game, struct Gamestate* gamestates) {
 		tmp = tmp->next;
 	}
 	tmp = gamestates;
+
+	if (counter == 0) {
+		al_clear_to_color(al_map_rgb(0, 0, 0));
+		al_hold_bitmap_drawing(false);
+		al_use_shader(game->data->grain);
+		al_set_shader_float("time", al_get_time()); //data->blink_counter/3600.0);
+		DrawTexturedRectangle(0, 0, al_get_display_width(game->display), al_get_display_height(game->display), al_map_rgb(0, 0, 0));
+		al_use_shader(NULL);
+		return;
+	}
+
 	while (tmp) {
 		al_use_shader(game->data->grain);
 		al_set_shader_float("time", al_get_time()); //data->blink_counter/3600.0);

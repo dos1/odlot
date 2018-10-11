@@ -61,7 +61,7 @@ void Gamestate_Tick(struct Game* game, struct GamestateResources* data) {
 	if (data->pos >= 1.0) {
 		data->con++;
 		if (data->con > 10) {
-			UnloadAllGamestates(game);
+			SwitchCurrentGamestate(game, "bongo");
 		}
 	}
 }

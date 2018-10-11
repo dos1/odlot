@@ -35,7 +35,7 @@ struct GamestateResources {
 	ALLEGRO_SHADER* circ;
 };
 
-int Gamestate_ProgressCount = 1; // number of loading steps as reported by Gamestate_Load; 0 when missing
+int Gamestate_ProgressCount = 4; // number of loading steps as reported by Gamestate_Load; 0 when missing
 
 void Gamestate_Logic(struct Game* game, struct GamestateResources* data, double delta) {
 	// Here you should do all your game logic as if <delta> seconds have passed.
@@ -74,9 +74,9 @@ void Gamestate_Logic(struct Game* game, struct GamestateResources* data, double 
 
 	if (data->odlatuje) {
 		float pos = al_get_audio_stream_position_secs(data->odlot) / al_get_audio_stream_length_secs(data->odlot);
-		SetCharacterPosition(game, data->grzebien, 1920 * 0.7 - 1920 * pos, 1080 * 1.4 - 800 - 1080 * pos, 0);
+		SetCharacterPosition(game, data->grzebien, 1920 * 0.7 - 1920 * (pos - 0.02), 1080 * 1.4 - 800 - 1080 * (pos - 0.02), 0);
 
-		if (pos >= 1.0) {
+		if (pos >= 0.98) {
 			SwitchCurrentGamestate(game, "logo");
 		}
 	}
@@ -89,35 +89,6 @@ void Gamestate_Logic(struct Game* game, struct GamestateResources* data, double 
 void Gamestate_Tick(struct Game* game, struct GamestateResources* data) {
 	// Here you should do all your game logic as if <delta> seconds have passed.
 	data->counter++;
-}
-
-static void DrawTexturedRectangle(float x1, float y1, float x2, float y2, ALLEGRO_COLOR color) {
-	ALLEGRO_VERTEX vtx[4];
-	int ii;
-
-	vtx[0].x = x1;
-	vtx[0].y = y1;
-	vtx[0].u = 0.0;
-	vtx[0].v = 0.0;
-	vtx[1].x = x1;
-	vtx[1].y = y2;
-	vtx[1].u = 0.0;
-	vtx[1].v = 1.0;
-	vtx[2].x = x2;
-	vtx[2].y = y2;
-	vtx[2].u = 1.0;
-	vtx[2].v = 1.0;
-	vtx[3].x = x2;
-	vtx[3].y = y1;
-	vtx[3].u = 1.0;
-	vtx[3].v = 0.0;
-
-	for (ii = 0; ii < 4; ii++) {
-		vtx[ii].color = color;
-		vtx[ii].z = 0;
-	}
-
-	al_draw_prim(vtx, 0, 0, 0, 4, ALLEGRO_PRIM_TRIANGLE_FAN);
 }
 
 void Gamestate_Draw(struct Game* game, struct GamestateResources* data) {
@@ -138,6 +109,7 @@ static CharacterCallback(Grzebien) {
 	struct GamestateResources* d = data;
 	if (new&& new != old && strcmp(new->name, "grzebien_macha") == 0) {
 		d->odlatuje = true;
+		al_rewind_audio_stream(d->odlot);
 		al_set_audio_stream_playing(d->odlot, true);
 	}
 }
@@ -156,6 +128,7 @@ void Gamestate_ProcessEvent(struct Game* game, struct GamestateResources* data, 
 		}
 		al_set_audio_stream_playing(data->rosnie, true);
 		data->unlocked = true;
+		al_hide_mouse_cursor(game->display);
 		SelectSpritesheet(game, data->grzebien, "grzebien_rosnie");
 		data->grzebien->callback = Grzebien;
 		data->grzebien->callbackData = data;
