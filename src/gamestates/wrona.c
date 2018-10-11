@@ -105,6 +105,8 @@ void Gamestate_Unload(struct Game* game, struct GamestateResources* data) {
 	// Good place for freeing all allocated memory and resources.
 	al_destroy_audio_stream(data->music);
 	al_close_video(data->video);
+	al_destroy_sample_instance(data->pac);
+	al_destroy_sample(data->sample);
 	free(data);
 }
 
