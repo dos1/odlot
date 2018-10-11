@@ -21,6 +21,7 @@
 struct CommonResources {
 	// Fill in with common data accessible from all gamestates.
 	ALLEGRO_SHADER* grain;
+	double mouseX, mouseY;
 };
 
 struct CommonResources* CreateGameData(struct Game* game);

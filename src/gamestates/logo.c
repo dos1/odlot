@@ -87,6 +87,7 @@ void* Gamestate_Load(struct Game* game, void (*progress)(struct Game*)) {
 	data->logo = al_load_bitmap(GetDataFilePath(game, "logo.png"));
 
 	data->music = al_load_audio_stream(GetDataFilePath(game, "logo.flac"), 4, 2048);
+	al_set_audio_stream_playing(data->music, false);
 	al_attach_audio_stream_to_mixer(data->music, game->audio.music);
 	return data;
 }
