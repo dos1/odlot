@@ -44,11 +44,13 @@ int main(int argc, char** argv) {
 
 	LoadGamestate(game, "myszka");
 
-	LoadGamestate(game, "logo");
-	LoadGamestate(game, "intro");
 	LoadGamestate(game, "bongo");
-	LoadGamestate(game, "taniec");
+	LoadGamestate(game, "but");
+	LoadGamestate(game, "intro");
+	LoadGamestate(game, "logo");
 	LoadGamestate(game, "pudelko");
+	LoadGamestate(game, "taniec");
+
 	StartGamestate(game, "intro");
 
 	game->data = CreateGameData(game);
