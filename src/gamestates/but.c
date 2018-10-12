@@ -45,9 +45,6 @@ void Gamestate_Tick(struct Game* game, struct GamestateResources* data) {
 	// Here you should do all your game logic as if <delta> seconds have passed.
 	if (data->state >= 3) {
 		data->counter++;
-		if (data->counter == 60 * 2) {
-			SwitchCurrentGamestate(game, "intro");
-		}
 	}
 }
 
@@ -73,11 +70,13 @@ void Gamestate_ProcessEvent(struct Game* game, struct GamestateResources* data, 
 	}
 
 	if (ev->type == ALLEGRO_EVENT_MOUSE_BUTTON_DOWN) {
-		al_hide_mouse_cursor(game->display);
-		data->state++;
-		SelectSpritesheet(game, data->but, "but");
-		al_play_sample_instance(data->sound);
-		data->but->callback = ButEnd;
+		if (!data->state) {
+			al_hide_mouse_cursor(game->display);
+			SelectSpritesheet(game, data->but, "but");
+			al_play_sample_instance(data->sound);
+			data->but->callback = ButEnd;
+			data->state++;
+		}
 	}
 }
 
