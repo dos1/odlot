@@ -85,7 +85,7 @@ void Compositor(struct Game* game, struct Gamestate* gamestates) {
 			float color = 1.0 + (rand() / (double)RAND_MAX) * 0.01 - 0.005;
 
 			al_draw_tinted_scaled_rotated_bitmap(tmp->fb, al_map_rgba_f(color, color, color, color), al_get_bitmap_width(tmp->fb) / 2.0, al_get_bitmap_height(tmp->fb) / 2.0,
-				game->_priv.clip_rect.w / 2.0 + randx, game->_priv.clip_rect.h / 2.0 + randy, (int)(game->_priv.clip_rect.w / al_get_bitmap_width(tmp->fb) * 1.05), (int)(game->_priv.clip_rect.h / al_get_bitmap_height(tmp->fb) * 1.05), 0.0, 0);
+				game->_priv.clip_rect.w / 2.0 + randx, game->_priv.clip_rect.h / 2.0 + randy, (int)(game->_priv.clip_rect.w / (double)al_get_bitmap_width(tmp->fb) * 1.05), (int)(game->_priv.clip_rect.h / (double)al_get_bitmap_height(tmp->fb) * 1.05), 0.0, 0);
 		}
 		al_use_shader(NULL);
 		tmp = tmp->next;
@@ -104,10 +104,8 @@ bool GlobalEventHandler(struct Game* game, ALLEGRO_EVENT* ev) {
 		game->config.fullscreen = !game->config.fullscreen;
 		if (game->config.fullscreen) {
 			SetConfigOption(game, "SuperDerpy", "fullscreen", "1");
-			al_hide_mouse_cursor(game->display);
 		} else {
 			SetConfigOption(game, "SuperDerpy", "fullscreen", "0");
-			al_show_mouse_cursor(game->display);
 		}
 #ifdef ALLEGRO_ANDROID
 		al_set_display_flag(game->display, ALLEGRO_FRAMELESS, game->config.fullscreen);
