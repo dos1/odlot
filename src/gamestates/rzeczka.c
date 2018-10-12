@@ -89,6 +89,7 @@ void Gamestate_ProcessEvent(struct Game* game, struct GamestateResources* data, 
 	if (ev->type == ALLEGRO_EVENT_MOUSE_BUTTON_DOWN) {
 		data->state++;
 		al_play_sample_instance(data->sound);
+		al_hide_mouse_cursor(game->display);
 	}
 }
 

@@ -71,6 +71,7 @@ void Gamestate_ProcessEvent(struct Game* game, struct GamestateResources* data, 
 			data->state++;
 			al_set_audio_stream_playing(data->music, true);
 			al_stop_sample_instance(data->sound);
+			al_hide_mouse_cursor(game->display);
 		}
 	}
 }

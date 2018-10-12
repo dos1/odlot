@@ -136,6 +136,7 @@ void Gamestate_Unload(struct Game* game, struct GamestateResources* data) {
 void Gamestate_Start(struct Game* game, struct GamestateResources* data) {
 	// Called when this gamestate gets control. Good place for initializing state,
 	// playing music etc.
+	al_hide_mouse_cursor(game->display);
 	al_set_audio_stream_playing(data->music, true);
 	al_set_audio_stream_playing(data->taniec, true);
 	data->counter = 0;
