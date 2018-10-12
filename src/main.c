@@ -68,5 +68,7 @@ int main(int argc, char** argv) {
 	game->handlers.destroy = DestroyGameData;
 	game->handlers.compositor = Compositor;
 
+	al_hide_mouse_cursor(game->display);
+
 	return libsuperderpy_run(game);
 }
