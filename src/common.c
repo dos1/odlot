@@ -66,7 +66,7 @@ void Compositor(struct Game* game, struct Gamestate* gamestates) {
 		al_hold_bitmap_drawing(false);
 		al_use_shader(game->data->grain);
 		al_set_shader_float("time", al_get_time()); //data->blink_counter/3600.0);
-		DrawTexturedRectangle(0, 0, al_get_display_width(game->display), al_get_display_height(game->display), al_map_rgb(0, 0, 0));
+		DrawTexturedRectangle(0, 0, game->_priv.clip_rect.w, game->_priv.clip_rect.h, al_map_rgb(0, 0, 0));
 		al_use_shader(NULL);
 		return;
 	}
