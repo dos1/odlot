@@ -40,6 +40,9 @@ int Gamestate_ProgressCount = 1; // number of loading steps as reported by Games
 
 void Gamestate_Logic(struct Game* game, struct GamestateResources* data, double delta) {
 	// Here you should do all your game logic as if <delta> seconds have passed.
+	if (data->counter > 130) {
+		al_show_mouse_cursor(game->display);
+	}
 }
 
 void Gamestate_Tick(struct Game* game, struct GamestateResources* data) {
