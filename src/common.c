@@ -85,10 +85,14 @@ void Compositor(struct Game* game, struct Gamestate* gamestates) {
 			float color = 1.0 + (rand() / (double)RAND_MAX) * 0.01 - 0.005;
 
 			al_draw_tinted_scaled_rotated_bitmap(tmp->fb, al_map_rgba_f(color, color, color, color), al_get_bitmap_width(tmp->fb) / 2.0, al_get_bitmap_height(tmp->fb) / 2.0,
-				game->_priv.clip_rect.w / 2.0 + randx, game->_priv.clip_rect.h / 2.0 + randy, (int)(game->_priv.clip_rect.w / (double)al_get_bitmap_width(tmp->fb) * 1.05), (int)(game->_priv.clip_rect.h / (double)al_get_bitmap_height(tmp->fb) * 1.05), 0.0, 0);
+				game->_priv.clip_rect.w / 2.0 + randx, game->_priv.clip_rect.h / 2.0 + randy, game->_priv.clip_rect.w / (double)al_get_bitmap_width(tmp->fb) * 1.05, game->_priv.clip_rect.h / (double)al_get_bitmap_height(tmp->fb) * 1.05, 0.0, 0);
 		}
 		al_use_shader(NULL);
 		tmp = tmp->next;
+	}
+
+	if (game->data->cursor) {
+		al_draw_scaled_rotated_bitmap(game->data->cursorbmp, 130, 165, game->data->mouseX * game->_priv.clip_rect.w, game->data->mouseY * game->_priv.clip_rect.h, game->_priv.clip_rect.w / (double)game->viewport.width * 0.1, game->_priv.clip_rect.h / (double)game->viewport.height * 0.1, 0, 0);
 	}
 }
 
@@ -123,14 +127,27 @@ bool GlobalEventHandler(struct Game* game, ALLEGRO_EVENT* ev) {
 	return false;
 }
 
+void ShowMouse(struct Game* game) {
+	game->data->cursor = true;
+}
+
+void HideMouse(struct Game* game) {
+	game->data->cursor = false;
+}
+
 struct CommonResources* CreateGameData(struct Game* game) {
 	struct CommonResources* data = calloc(1, sizeof(struct CommonResources));
 	data->grain = CreateShader(game, GetDataFilePath(game, "shaders/vertex.glsl"), GetDataFilePath(game, "shaders/grain.glsl"));
 	data->first_load = true;
+	data->mouseX = -1;
+	data->mouseY = -1;
+	data->cursor = false;
+	data->cursorbmp = al_load_bitmap(GetDataFilePath(game, "kursor_normal.png"));
 	return data;
 }
 
 void DestroyGameData(struct Game* game) {
 	DestroyShader(game, game->data->grain);
+	al_destroy_bitmap(game->data->cursorbmp);
 	free(game->data);
 }

@@ -24,6 +24,8 @@ struct CommonResources {
 	double mouseX, mouseY;
 	bool first_load;
 	char* next;
+	bool cursor;
+	ALLEGRO_BITMAP* cursorbmp;
 };
 
 void DrawTexturedRectangle(float x1, float y1, float x2, float y2, ALLEGRO_COLOR color);
@@ -31,3 +33,5 @@ struct CommonResources* CreateGameData(struct Game* game);
 void DestroyGameData(struct Game* game);
 bool GlobalEventHandler(struct Game* game, ALLEGRO_EVENT* ev);
 void Compositor(struct Game* game, struct Gamestate* gamestates);
+void ShowMouse(struct Game* game);
+void HideMouse(struct Game* game);

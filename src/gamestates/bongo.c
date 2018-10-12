@@ -72,7 +72,7 @@ void Gamestate_Tick(struct Game* game, struct GamestateResources* data) {
 	if (data->counter == 130) {
 		al_stop_sample_instance(data->bongo[data->seq[3]]);
 		al_play_sample_instance(data->bongo[data->seq[3]]);
-		al_show_mouse_cursor(game->display);
+		ShowMouse(game);
 	}
 	data->counter++;
 }
@@ -119,7 +119,7 @@ void Gamestate_ProcessEvent(struct Game* game, struct GamestateResources* data, 
 			if (data->current == 4) {
 				data->current = 0;
 				data->counter = -20;
-				al_hide_mouse_cursor(game->display);
+				HideMouse(game);
 			}
 		}
 	}
@@ -163,7 +163,7 @@ void Gamestate_Unload(struct Game* game, struct GamestateResources* data) {
 void Gamestate_Start(struct Game* game, struct GamestateResources* data) {
 	// Called when this gamestate gets control. Good place for initializing state,
 	// playing music etc.
-	al_hide_mouse_cursor(game->display);
+	HideMouse(game);
 	al_set_audio_stream_playing(data->music, true);
 	data->counter = 0;
 	data->seq[0] = rand() % 5;

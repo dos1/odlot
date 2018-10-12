@@ -128,7 +128,7 @@ void Gamestate_ProcessEvent(struct Game* game, struct GamestateResources* data, 
 		}
 		al_set_audio_stream_playing(data->rosnie, true);
 		data->unlocked = true;
-		al_hide_mouse_cursor(game->display);
+		HideMouse(game);
 		SelectSpritesheet(game, data->grzebien, "grzebien_rosnie");
 		data->grzebien->callback = Grzebien;
 		data->grzebien->callbackData = data;
@@ -211,7 +211,7 @@ void Gamestate_Start(struct Game* game, struct GamestateResources* data) {
 	data->odlatuje = false;
 	data->distance = -1;
 	game->data->first_load = false;
-	al_show_mouse_cursor(game->display);
+	ShowMouse(game);
 }
 
 void Gamestate_Stop(struct Game* game, struct GamestateResources* data) {
