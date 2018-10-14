@@ -94,9 +94,9 @@ void* Gamestate_Load(struct Game* game, void (*progress)(struct Game*)) {
 	struct GamestateResources* data = calloc(1, sizeof(struct GamestateResources));
 	progress(game); // report that we progressed with the loading, so the engine can move a progress bar
 
-	data->bg = al_load_bitmap(GetDataFilePath(game, "bongo.png"));
+	data->bg = al_load_bitmap(GetDataFilePath(game, "bongo.webp"));
 	progress(game);
-	data->gradient = al_load_bitmap(GetDataFilePath(game, "gradient.png"));
+	data->gradient = al_load_bitmap(GetDataFilePath(game, "gradient.webp"));
 	progress(game);
 
 	data->music = al_load_audio_stream(GetDataFilePath(game, "bongobg.flac"), 4, 2048);

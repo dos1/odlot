@@ -142,7 +142,7 @@ struct CommonResources* CreateGameData(struct Game* game) {
 	data->mouseX = -1;
 	data->mouseY = -1;
 	data->cursor = false;
-	data->cursorbmp = al_load_bitmap(GetDataFilePath(game, "kursor_normal.png"));
+	data->cursorbmp = al_load_bitmap(GetDataFilePath(game, "kursor_normal.webp"));
 	return data;
 }
 

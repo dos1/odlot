@@ -135,7 +135,7 @@ void* Gamestate_Load(struct Game* game, void (*progress)(struct Game*)) {
 	struct GamestateResources* data = calloc(1, sizeof(struct GamestateResources));
 	progress(game); // report that we progressed with the loading, so the engine can move a progress bar
 
-	data->bg = al_load_bitmap(GetDataFilePath(game, "bongo.png"));
+	data->bg = al_load_bitmap(GetDataFilePath(game, "bongo.webp"));
 	progress(game);
 
 	for (int i = 0; i < 5; i++) {

@@ -151,22 +151,22 @@ void Gamestate_Start(struct Game* game, struct GamestateResources* data) {
 
 	switch (data->myszol) {
 		case MYSZOL_LEFT:
-			data->myszka = al_load_bitmap(GetDataFilePath(game, PunchNumber(game, "myszki/lewoX.png", 'X', rand() % 2)));
+			data->myszka = al_load_bitmap(GetDataFilePath(game, PunchNumber(game, "myszki/lewoX.webp", 'X', rand() % 2)));
 			break;
 		case MYSZOL_RIGHT:
-			data->myszka = al_load_bitmap(GetDataFilePath(game, PunchNumber(game, "myszki/prawoX.png", 'X', rand() % 3)));
+			data->myszka = al_load_bitmap(GetDataFilePath(game, PunchNumber(game, "myszki/prawoX.webp", 'X', rand() % 3)));
 			break;
 		case MYSZOL_TOP:
-			data->myszka = al_load_bitmap(GetDataFilePath(game, PunchNumber(game, "myszki/goraX.png", 'X', rand() % 3)));
+			data->myszka = al_load_bitmap(GetDataFilePath(game, PunchNumber(game, "myszki/goraX.webp", 'X', rand() % 3)));
 			break;
 		case MYSZOL_BOTTOM:
-			data->myszka = al_load_bitmap(GetDataFilePath(game, PunchNumber(game, "myszki/dolX.png", 'X', rand() % 4)));
+			data->myszka = al_load_bitmap(GetDataFilePath(game, PunchNumber(game, "myszki/dolX.webp", 'X', rand() % 4)));
 			break;
 		case MYSZOL_BOTTOM_LEFT:
-			data->myszka = al_load_bitmap(GetDataFilePath(game, "myszki/lewodol.png"));
+			data->myszka = al_load_bitmap(GetDataFilePath(game, "myszki/lewodol.webp"));
 			break;
 		case MYSZOL_TOP_RIGHT:
-			data->myszka = al_load_bitmap(GetDataFilePath(game, "myszki/prawogora.png"));
+			data->myszka = al_load_bitmap(GetDataFilePath(game, "myszki/prawogora.webp"));
 			break;
 	}
 }

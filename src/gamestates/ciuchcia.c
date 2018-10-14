@@ -85,11 +85,11 @@ void* Gamestate_Load(struct Game* game, void (*progress)(struct Game*)) {
 	al_attach_audio_stream_to_mixer(data->music, game->audio.music);
 	progress(game);
 
-	data->most = al_load_bitmap(GetDataFilePath(game, "most.png"));
+	data->most = al_load_bitmap(GetDataFilePath(game, "most.webp"));
 	progress(game);
-	data->but = al_load_bitmap(GetDataFilePath(game, "but_nieanimowany.png"));
+	data->but = al_load_bitmap(GetDataFilePath(game, "but_nieanimowany.webp"));
 	progress(game);
-	data->gradient = al_load_bitmap(GetDataFilePath(game, "gradient.png"));
+	data->gradient = al_load_bitmap(GetDataFilePath(game, "gradient.webp"));
 
 	return data;
 }
