@@ -36,7 +36,7 @@ struct GamestateResources {
 	int user[4];
 };
 
-int Gamestate_ProgressCount = 1; // number of loading steps as reported by Gamestate_Load; 0 when missing
+int Gamestate_ProgressCount = 7; // number of loading steps as reported by Gamestate_Load; 0 when missing
 
 void Gamestate_Logic(struct Game* game, struct GamestateResources* data, double delta) {
 	// Here you should do all your game logic as if <delta> seconds have passed.
@@ -136,12 +136,14 @@ void* Gamestate_Load(struct Game* game, void (*progress)(struct Game*)) {
 	progress(game); // report that we progressed with the loading, so the engine can move a progress bar
 
 	data->bg = al_load_bitmap(GetDataFilePath(game, "bongo.png"));
+	progress(game);
 
 	for (int i = 0; i < 5; i++) {
 		data->sample[i] = al_load_sample(GetDataFilePath(game, PunchNumber(game, "bongoX.flac", 'X', i + 1)));
 		data->bongo[i] = al_create_sample_instance(data->sample[i]);
 		al_attach_sample_instance_to_mixer(data->bongo[i], game->audio.fx);
 		al_set_sample_instance_playmode(data->bongo[i], ALLEGRO_PLAYMODE_ONCE);
+		progress(game);
 	}
 
 	data->music = al_load_audio_stream(GetDataFilePath(game, "bongobg.flac"), 4, 2048);
@@ -157,6 +159,11 @@ void Gamestate_Unload(struct Game* game, struct GamestateResources* data) {
 	// Called when the gamestate library is being unloaded.
 	// Good place for freeing all allocated memory and resources.
 	al_destroy_audio_stream(data->music);
+	al_destroy_bitmap(data->bg);
+	for (int i = 0; i < 5; i++) {
+		al_destroy_sample_instance(data->bongo[i]);
+		al_destroy_sample(data->sample[i]);
+	}
 	free(data);
 }
 

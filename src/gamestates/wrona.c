@@ -36,7 +36,7 @@ struct GamestateResources {
 	int counter;
 };
 
-int Gamestate_ProgressCount = 5; // number of loading steps as reported by Gamestate_Load; 0 when missing
+int Gamestate_ProgressCount = 3; // number of loading steps as reported by Gamestate_Load; 0 when missing
 
 void Gamestate_Logic(struct Game* game, struct GamestateResources* data, double delta) {
 	// Here you should do all your game logic as if <delta> seconds have passed.
@@ -88,12 +88,14 @@ void* Gamestate_Load(struct Game* game, void (*progress)(struct Game*)) {
 	al_set_audio_stream_playmode(data->music, ALLEGRO_PLAYMODE_LOOP);
 	al_set_audio_stream_gain(data->music, 1.0);
 	al_attach_audio_stream_to_mixer(data->music, game->audio.music);
+	progress(game);
 
 	data->sample = al_load_sample(GetDataFilePath(game, "alarm.flac"));
 	data->pac = al_create_sample_instance(data->sample);
 	al_attach_sample_instance_to_mixer(data->pac, game->audio.fx);
 	al_set_sample_instance_gain(data->pac, 1.0);
 	al_set_sample_instance_playmode(data->pac, ALLEGRO_PLAYMODE_ONCE);
+	progress(game);
 
 	data->video = al_open_video(GetDataFilePath(game, "wrona.ogv"));
 

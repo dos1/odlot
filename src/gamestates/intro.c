@@ -35,7 +35,7 @@ struct GamestateResources {
 	ALLEGRO_SHADER* circ;
 };
 
-int Gamestate_ProgressCount = 4; // number of loading steps as reported by Gamestate_Load; 0 when missing
+int Gamestate_ProgressCount = 10; // number of loading steps as reported by Gamestate_Load; 0 when missing
 
 void Gamestate_Logic(struct Game* game, struct GamestateResources* data, double delta) {
 	// Here you should do all your game logic as if <delta> seconds have passed.
@@ -151,29 +151,35 @@ void* Gamestate_Load(struct Game* game, void (*progress)(struct Game*)) {
 	data->spada = al_load_audio_stream(GetDataFilePath(game, "grzebien.flac"), 4, 2048);
 	al_set_audio_stream_playing(data->spada, false);
 	al_attach_audio_stream_to_mixer(data->spada, game->audio.fx);
+	progress(game);
 
 	data->rosnie = al_load_audio_stream(GetDataFilePath(game, "grzebienrosnie.flac"), 4, 2048);
 	al_set_audio_stream_playing(data->rosnie, false);
 	al_attach_audio_stream_to_mixer(data->rosnie, game->audio.fx);
+	progress(game);
 
 	data->odlot = al_load_audio_stream(GetDataFilePath(game, "grzebienodlot.flac"), 4, 2048);
 	al_set_audio_stream_playing(data->odlot, false);
 	al_attach_audio_stream_to_mixer(data->odlot, game->audio.fx);
+	progress(game);
 
 	data->jeden = al_load_audio_stream(GetDataFilePath(game, "1.flac"), 4, 2048);
 	al_set_audio_stream_playing(data->jeden, false);
 	al_set_audio_stream_playmode(data->jeden, ALLEGRO_PLAYMODE_LOOP);
 	al_attach_audio_stream_to_mixer(data->jeden, game->audio.music);
+	progress(game);
 
 	data->dwa = al_load_audio_stream(GetDataFilePath(game, "2.flac"), 4, 2048);
 	al_set_audio_stream_playing(data->dwa, false);
 	al_set_audio_stream_playmode(data->dwa, ALLEGRO_PLAYMODE_LOOP);
 	al_attach_audio_stream_to_mixer(data->dwa, game->audio.music);
+	progress(game);
 
 	data->trzy = al_load_audio_stream(GetDataFilePath(game, "3.flac"), 4, 2048);
 	al_set_audio_stream_playing(data->trzy, false);
 	al_set_audio_stream_playmode(data->trzy, ALLEGRO_PLAYMODE_LOOP);
 	al_attach_audio_stream_to_mixer(data->trzy, game->audio.music);
+	progress(game);
 
 	data->grzebien = CreateCharacter(game, "grzebien");
 	RegisterSpritesheet(game, data->grzebien, "grzebien_rosnie");
@@ -199,6 +205,10 @@ void Gamestate_Unload(struct Game* game, struct GamestateResources* data) {
 	al_destroy_audio_stream(data->jeden);
 	al_destroy_audio_stream(data->dwa);
 	al_destroy_audio_stream(data->trzy);
+
+	DestroyCharacter(game, data->grzebien);
+	DestroyShader(game, data->circ);
+
 	free(data);
 }
 

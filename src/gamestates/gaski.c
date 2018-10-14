@@ -26,8 +26,6 @@ struct GamestateResources {
 	// It gets created on load and then gets passed around to all other function calls.
 	struct Character* bg;
 	ALLEGRO_AUDIO_STREAM* music;
-	/*	ALLEGRO_SAMPLE_INSTANCE* sound[3];
-	ALLEGRO_SAMPLE* sample[3];*/
 	ALLEGRO_SAMPLE* sample;
 
 	struct Character *gaski[64], *gaska;
@@ -35,7 +33,7 @@ struct GamestateResources {
 	int counter;
 };
 
-int Gamestate_ProgressCount = 5; // number of loading steps as reported by Gamestate_Load; 0 when missing
+int Gamestate_ProgressCount = 74; // number of loading steps as reported by Gamestate_Load; 0 when missing
 
 void Gamestate_Logic(struct Game* game, struct GamestateResources* data, double delta) {
 	// Here you should do all your game logic as if <delta> seconds have passed.
@@ -107,6 +105,7 @@ void* Gamestate_Load(struct Game* game, void (*progress)(struct Game*)) {
 	progress(game); // report that we progressed with the loading, so the engine can move a progress bar
 
 	al_reserve_samples(64);
+	progress(game);
 
 	data->gaska = CreateCharacter(game, "gaski");
 	RegisterSpritesheet(game, data->gaska, "przod1");
@@ -133,6 +132,7 @@ void* Gamestate_Load(struct Game* game, void (*progress)(struct Game*)) {
 		data->gaski[i]->reversing = x > 0;
 		data->gaski[i]->scaleX = 0.25 + i * 0.005;
 		data->gaski[i]->scaleY = 0.25 + i * 0.005;
+		progress(game);
 	}
 
 	SelectSpritesheet(game, data->gaski[0], "przod1");
@@ -147,14 +147,17 @@ void* Gamestate_Load(struct Game* game, void (*progress)(struct Game*)) {
 	data->gaski[0]->scaleY = 0.25 + 64 * 0.005;
 	data->gaski[1]->scaleX = 0.25 + 64 * 0.005;
 	data->gaski[1]->scaleY = 0.25 + 64 * 0.005;
+	progress(game);
 
 	data->music = al_load_audio_stream(GetDataFilePath(game, "niepokoj.flac"), 4, 2048);
 	al_set_audio_stream_playing(data->music, false);
 	al_set_audio_stream_playmode(data->music, ALLEGRO_PLAYMODE_LOOP);
 	al_set_audio_stream_gain(data->music, 0.5);
 	al_attach_audio_stream_to_mixer(data->music, game->audio.music);
+	progress(game);
 
 	data->sample = al_load_sample(GetDataFilePath(game, "gaska.flac"));
+	progress(game);
 
 	data->bg = CreateCharacter(game, "bgs");
 	RegisterSpritesheet(game, data->bg, "bgs");
@@ -167,6 +170,15 @@ void Gamestate_Unload(struct Game* game, struct GamestateResources* data) {
 	// Called when the gamestate library is being unloaded.
 	// Good place for freeing all allocated memory and resources.
 	al_destroy_audio_stream(data->music);
+
+	DestroyCharacter(game, data->bg);
+	al_destroy_sample(data->sample);
+
+	for (int i = 0; i < 64; i++) {
+		DestroyCharacter(game, data->gaski[i]);
+	}
+	DestroyCharacter(game, data->gaska);
+
 	free(data);
 }
 

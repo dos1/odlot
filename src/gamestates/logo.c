@@ -30,7 +30,7 @@ struct GamestateResources {
 	int counter;
 };
 
-int Gamestate_ProgressCount = 1; // number of loading steps as reported by Gamestate_Load; 0 when missing
+int Gamestate_ProgressCount = 4; // number of loading steps as reported by Gamestate_Load; 0 when missing
 
 void Gamestate_Logic(struct Game* game, struct GamestateResources* data, double delta) {
 	// Here you should do all your game logic as if <delta> seconds have passed.
@@ -84,8 +84,11 @@ void* Gamestate_Load(struct Game* game, void (*progress)(struct Game*)) {
 	progress(game); // report that we progressed with the loading, so the engine can move a progress bar
 
 	data->chodnik = al_load_bitmap(GetDataFilePath(game, "chodnik.png"));
+	progress(game);
 	data->gradient = al_load_bitmap(GetDataFilePath(game, "gradient.png"));
+	progress(game);
 	data->logo = al_load_bitmap(GetDataFilePath(game, "logo.png"));
+	progress(game);
 
 	data->music = al_load_audio_stream(GetDataFilePath(game, "logo.flac"), 4, 2048);
 	al_set_audio_stream_playing(data->music, false);

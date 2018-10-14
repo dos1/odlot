@@ -32,7 +32,7 @@ struct GamestateResources {
 	int counter;
 };
 
-int Gamestate_ProgressCount = 5; // number of loading steps as reported by Gamestate_Load; 0 when missing
+int Gamestate_ProgressCount = 10; // number of loading steps as reported by Gamestate_Load; 0 when missing
 
 void Gamestate_Logic(struct Game* game, struct GamestateResources* data, double delta) {
 	// Here you should do all your game logic as if <delta> seconds have passed.
@@ -95,18 +95,22 @@ void* Gamestate_Load(struct Game* game, void (*progress)(struct Game*)) {
 	progress(game); // report that we progressed with the loading, so the engine can move a progress bar
 
 	data->bg = al_load_bitmap(GetDataFilePath(game, "bongo.png"));
+	progress(game);
 	data->gradient = al_load_bitmap(GetDataFilePath(game, "gradient.png"));
+	progress(game);
 
 	data->music = al_load_audio_stream(GetDataFilePath(game, "bongobg.flac"), 4, 2048);
 	al_set_audio_stream_playing(data->music, false);
 	al_set_audio_stream_playmode(data->music, ALLEGRO_PLAYMODE_LOOP);
 	al_set_audio_stream_gain(data->music, 1.0);
 	al_attach_audio_stream_to_mixer(data->music, game->audio.music);
+	progress(game);
 
 	data->taniec = al_load_audio_stream(GetDataFilePath(game, "taniec.flac"), 4, 2048);
 	al_set_audio_stream_playing(data->taniec, false);
 	al_set_audio_stream_playmode(data->taniec, ALLEGRO_PLAYMODE_ONCE);
 	al_attach_audio_stream_to_mixer(data->taniec, game->audio.music);
+	progress(game);
 
 	data->niebieski = CreateCharacter(game, "niebieski");
 	RegisterSpritesheet(game, data->niebieski, "niebieski_przod");
@@ -130,6 +134,12 @@ void Gamestate_Unload(struct Game* game, struct GamestateResources* data) {
 	// Good place for freeing all allocated memory and resources.
 	al_destroy_audio_stream(data->music);
 	al_destroy_audio_stream(data->taniec);
+	al_destroy_bitmap(data->bg);
+	al_destroy_bitmap(data->gradient);
+	DestroyCharacter(game, data->niebieski);
+	DestroyCharacter(game, data->sowka);
+	DestroyCharacter(game, data->grzebien);
+
 	free(data);
 }
 

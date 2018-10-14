@@ -32,7 +32,7 @@ struct GamestateResources {
 	int counter;
 };
 
-int Gamestate_ProgressCount = 5; // number of loading steps as reported by Gamestate_Load; 0 when missing
+int Gamestate_ProgressCount = 3; // number of loading steps as reported by Gamestate_Load; 0 when missing
 
 void Gamestate_Logic(struct Game* game, struct GamestateResources* data, double delta) {
 	// Here you should do all your game logic as if <delta> seconds have passed.
@@ -77,6 +77,7 @@ void* Gamestate_Load(struct Game* game, void (*progress)(struct Game*)) {
 	al_set_audio_stream_playmode(data->music, ALLEGRO_PLAYMODE_LOOP);
 	al_set_audio_stream_gain(data->music, 1.0);
 	al_attach_audio_stream_to_mixer(data->music, game->audio.music);
+	progress(game);
 
 	data->altanka = CreateCharacter(game, "altanka");
 	RegisterSpritesheet(game, data->altanka, "altanka");
@@ -89,6 +90,7 @@ void Gamestate_Unload(struct Game* game, struct GamestateResources* data) {
 	// Called when the gamestate library is being unloaded.
 	// Good place for freeing all allocated memory and resources.
 	al_destroy_audio_stream(data->music);
+	DestroyCharacter(game, data->altanka);
 	free(data);
 }
 
