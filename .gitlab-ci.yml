@@ -10,7 +10,7 @@ stages:
   name: "odlot-$CI_JOB_NAME-$CI_COMMIT_SHA"
   paths:
     - utils/output/
-  expire_in: 15 minutes
+  expire_in: 90 minutes
 
 build:win64:
   image: dosowisko/libsuperderpy-win64
