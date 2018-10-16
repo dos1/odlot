@@ -27,14 +27,20 @@ struct GamestateResources {
 	ALLEGRO_BITMAP *domek, *mask;
 	ALLEGRO_SAMPLE_INSTANCE* sound;
 	ALLEGRO_SAMPLE* sample;
+	ALLEGRO_VIDEO* video;
 	int counter;
+	bool playing;
 };
 
-int Gamestate_ProgressCount = 3; // number of loading steps as reported by Gamestate_Load; 0 when missing
+int Gamestate_ProgressCount = 4; // number of loading steps as reported by Gamestate_Load; 0 when missing
 
 void Gamestate_Logic(struct Game* game, struct GamestateResources* data, double delta) {
 	// Here you should do all your game logic as if <delta> seconds have passed.
 	CheckMask(game, data->mask);
+	if (al_get_video_position(data->video, ALLEGRO_VIDEO_POSITION_ACTUAL) >= 15) {
+		game->data->next = strdup("rave");
+		SwitchCurrentGamestate(game, "myszka");
+	}
 }
 
 void Gamestate_Tick(struct Game* game, struct GamestateResources* data) {
@@ -44,6 +50,12 @@ void Gamestate_Tick(struct Game* game, struct GamestateResources* data) {
 void Gamestate_Draw(struct Game* game, struct GamestateResources* data) {
 	// Draw everything to the screen here.
 	al_draw_bitmap(data->domek, 0, 0, 0);
+	if (data->playing) {
+		ALLEGRO_BITMAP* bmp = al_get_video_frame(data->video);
+		if (bmp) {
+			al_draw_bitmap(bmp, 0, 0, 0);
+		}
+	}
 }
 
 void Gamestate_ProcessEvent(struct Game* game, struct GamestateResources* data, ALLEGRO_EVENT* ev) {
@@ -55,6 +67,13 @@ void Gamestate_ProcessEvent(struct Game* game, struct GamestateResources* data, 
 	}
 	if (ev->type == ALLEGRO_EVENT_MOUSE_BUTTON_DOWN) {
 		if (!game->data->hover) { return; }
+		al_set_video_playing(data->video, true);
+		data->playing = true;
+		HideMouse(game);
+		al_set_sample_instance_gain(data->sound, 2.0);
+	}
+	if (ev->type == ALLEGRO_EVENT_MOUSE_BUTTON_UP) {
+		if (!data->playing) { return; }
 		game->data->next = strdup("rave");
 		SwitchCurrentGamestate(game, "myszka");
 	}
@@ -79,6 +98,9 @@ void* Gamestate_Load(struct Game* game, void (*progress)(struct Game*)) {
 	progress(game);
 
 	data->mask = al_load_bitmap(GetDataFilePath(game, "domekmask.webp"));
+	progress(game);
+
+	data->video = al_open_video(GetDataFilePath(game, "domek.ogv"));
 
 	return data;
 }
@@ -90,6 +112,7 @@ void Gamestate_Unload(struct Game* game, struct GamestateResources* data) {
 	al_destroy_bitmap(data->mask);
 	al_destroy_sample_instance(data->sound);
 	al_destroy_sample(data->sample);
+	al_close_video(data->video);
 	free(data);
 }
 
@@ -98,12 +121,16 @@ void Gamestate_Start(struct Game* game, struct GamestateResources* data) {
 	// playing music etc.
 	ShowMouse(game);
 	data->counter = 0;
+	data->playing = false;
 	al_play_sample_instance(data->sound);
+	al_start_video(data->video, game->audio.fx);
+	al_set_video_playing(data->video, false);
 }
 
 void Gamestate_Stop(struct Game* game, struct GamestateResources* data) {
 	// Called when gamestate gets stopped. Stop timers, music etc. here.
 	al_stop_sample_instance(data->sound);
+	al_set_video_playing(data->video, false);
 }
 
 // Optional endpoints:

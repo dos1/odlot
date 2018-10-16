@@ -125,6 +125,7 @@ void Gamestate_Start(struct Game* game, struct GamestateResources* data) {
 void Gamestate_Stop(struct Game* game, struct GamestateResources* data) {
 	// Called when gamestate gets stopped. Stop timers, music etc. here.
 	al_set_audio_stream_playing(data->music, false);
+	al_set_video_playing(data->video, false);
 }
 
 // Optional endpoints:
