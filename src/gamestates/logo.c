@@ -24,13 +24,13 @@
 struct GamestateResources {
 	// This struct is for every resource allocated and used by your gamestate.
 	// It gets created on load and then gets passed around to all other function calls.
-	ALLEGRO_BITMAP *logo, *chodnik, *gradient;
+	ALLEGRO_BITMAP *logo, *chodnik, *gradient, *by;
 	ALLEGRO_AUDIO_STREAM* music;
 
 	int counter;
 };
 
-int Gamestate_ProgressCount = 4; // number of loading steps as reported by Gamestate_Load; 0 when missing
+int Gamestate_ProgressCount = 5; // number of loading steps as reported by Gamestate_Load; 0 when missing
 
 void Gamestate_Logic(struct Game* game, struct GamestateResources* data, double delta) {
 	// Here you should do all your game logic as if <delta> seconds have passed.
@@ -60,6 +60,14 @@ void Gamestate_Draw(struct Game* game, struct GamestateResources* data) {
 		}
 
 		al_draw_tinted_bitmap(data->logo, al_map_rgba(200, 200, 200, 200), 0, 0, 0);
+
+		if (data->counter > 180) {
+			al_draw_tinted_scaled_rotated_bitmap(data->by, al_map_rgba(222, 222, 222, 222),
+				al_get_bitmap_width(data->by) / 2.0, al_get_bitmap_height(data->by) / 2.0,
+				game->viewport.width / 2.0, game->viewport.height - al_get_bitmap_height(data->by),
+				0.5, 0.5, 0.0, 0);
+		}
+
 		al_draw_bitmap(data->gradient, 0, 0, 0);
 	}
 }
@@ -89,6 +97,8 @@ void* Gamestate_Load(struct Game* game, void (*progress)(struct Game*)) {
 	progress(game);
 	data->logo = al_load_bitmap(GetDataFilePath(game, "logo.webp"));
 	progress(game);
+	data->by = al_load_bitmap(GetDataFilePath(game, "byholypangolin.webp"));
+	progress(game);
 
 	data->music = al_load_audio_stream(GetDataFilePath(game, "logo.flac"), 4, 2048);
 	al_set_audio_stream_playing(data->music, false);
@@ -102,6 +112,7 @@ void Gamestate_Unload(struct Game* game, struct GamestateResources* data) {
 	al_destroy_bitmap(data->chodnik);
 	al_destroy_bitmap(data->gradient);
 	al_destroy_bitmap(data->logo);
+	al_destroy_bitmap(data->by);
 	al_destroy_audio_stream(data->music);
 	free(data);
 }
