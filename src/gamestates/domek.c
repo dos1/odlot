@@ -24,16 +24,17 @@
 struct GamestateResources {
 	// This struct is for every resource allocated and used by your gamestate.
 	// It gets created on load and then gets passed around to all other function calls.
-	ALLEGRO_BITMAP* domek;
+	ALLEGRO_BITMAP *domek, *mask;
 	ALLEGRO_SAMPLE_INSTANCE* sound;
 	ALLEGRO_SAMPLE* sample;
 	int counter;
 };
 
-int Gamestate_ProgressCount = 2; // number of loading steps as reported by Gamestate_Load; 0 when missing
+int Gamestate_ProgressCount = 3; // number of loading steps as reported by Gamestate_Load; 0 when missing
 
 void Gamestate_Logic(struct Game* game, struct GamestateResources* data, double delta) {
 	// Here you should do all your game logic as if <delta> seconds have passed.
+	CheckMask(game, data->mask);
 }
 
 void Gamestate_Tick(struct Game* game, struct GamestateResources* data) {
@@ -53,6 +54,7 @@ void Gamestate_ProcessEvent(struct Game* game, struct GamestateResources* data, 
 		// When there are no active gamestates, the engine will quit.
 	}
 	if (ev->type == ALLEGRO_EVENT_MOUSE_BUTTON_DOWN) {
+		if (!game->data->hover) { return; }
 		game->data->next = strdup("rave");
 		SwitchCurrentGamestate(game, "myszka");
 	}
@@ -74,6 +76,10 @@ void* Gamestate_Load(struct Game* game, void (*progress)(struct Game*)) {
 	progress(game);
 
 	data->domek = al_load_bitmap(GetDataFilePath(game, "domek.jpg"));
+	progress(game);
+
+	data->mask = al_load_bitmap(GetDataFilePath(game, "domekmask.webp"));
+
 	return data;
 }
 
@@ -81,6 +87,7 @@ void Gamestate_Unload(struct Game* game, struct GamestateResources* data) {
 	// Called when the gamestate library is being unloaded.
 	// Good place for freeing all allocated memory and resources.
 	al_destroy_bitmap(data->domek);
+	al_destroy_bitmap(data->mask);
 	al_destroy_sample_instance(data->sound);
 	al_destroy_sample(data->sample);
 	free(data);

@@ -25,27 +25,20 @@ struct GamestateResources {
 	// This struct is for every resource allocated and used by your gamestate.
 	// It gets created on load and then gets passed around to all other function calls.
 	struct Character* but;
+	ALLEGRO_BITMAP* mask;
 	ALLEGRO_AUDIO_STREAM* music;
 	ALLEGRO_SAMPLE_INSTANCE* sound;
 	ALLEGRO_SAMPLE* sample;
 
 	int state;
-
-	int counter;
 };
 
-int Gamestate_ProgressCount = 6; // number of loading steps as reported by Gamestate_Load; 0 when missing
+int Gamestate_ProgressCount = 7; // number of loading steps as reported by Gamestate_Load; 0 when missing
 
 void Gamestate_Logic(struct Game* game, struct GamestateResources* data, double delta) {
 	// Here you should do all your game logic as if <delta> seconds have passed.
 	AnimateCharacter(game, data->but, delta, 1.0);
-}
-
-void Gamestate_Tick(struct Game* game, struct GamestateResources* data) {
-	// Here you should do all your game logic as if <delta> seconds have passed.
-	if (data->state >= 3) {
-		data->counter++;
-	}
+	CheckMask(game, data->mask);
 }
 
 void Gamestate_Draw(struct Game* game, struct GamestateResources* data) {
@@ -70,7 +63,7 @@ void Gamestate_ProcessEvent(struct Game* game, struct GamestateResources* data, 
 	}
 
 	if (ev->type == ALLEGRO_EVENT_MOUSE_BUTTON_DOWN) {
-		if (!data->state) {
+		if (!data->state && game->data->hover) {
 			HideMouse(game);
 			SelectSpritesheet(game, data->but, "but");
 			al_play_sample_instance(data->sound);
@@ -89,6 +82,9 @@ void* Gamestate_Load(struct Game* game, void (*progress)(struct Game*)) {
 
 	struct GamestateResources* data = calloc(1, sizeof(struct GamestateResources));
 	progress(game); // report that we progressed with the loading, so the engine can move a progress bar
+
+	data->mask = al_load_bitmap(GetDataFilePath(game, "sprites/but/mask.webp"));
+	progress(game);
 
 	data->music = al_load_audio_stream(GetDataFilePath(game, "bongobg.flac"), 4, 2048);
 	al_set_audio_stream_playing(data->music, false);
@@ -121,6 +117,7 @@ void Gamestate_Unload(struct Game* game, struct GamestateResources* data) {
 	DestroyCharacter(game, data->but);
 	al_destroy_sample_instance(data->sound);
 	al_destroy_sample(data->sample);
+	al_destroy_bitmap(data->mask);
 	free(data);
 }
 
@@ -130,7 +127,6 @@ void Gamestate_Start(struct Game* game, struct GamestateResources* data) {
 	ShowMouse(game);
 	al_set_audio_stream_playing(data->music, true);
 	SetCharacterPosition(game, data->but, 1920 / 2.0, 1080 / 2.0, 0);
-	data->counter = 0;
 	data->state = 0;
 }
 

@@ -24,7 +24,7 @@
 struct GamestateResources {
 	// This struct is for every resource allocated and used by your gamestate.
 	// It gets created on load and then gets passed around to all other function calls.
-	struct Character* pienki;
+	struct Character *pienki, *mask;
 	ALLEGRO_AUDIO_STREAM* music;
 
 	ALLEGRO_SAMPLE* sample;
@@ -35,11 +35,12 @@ struct GamestateResources {
 	int counter;
 };
 
-int Gamestate_ProgressCount = 4; // number of loading steps as reported by Gamestate_Load; 0 when missing
+int Gamestate_ProgressCount = 5; // number of loading steps as reported by Gamestate_Load; 0 when missing
 
 void Gamestate_Logic(struct Game* game, struct GamestateResources* data, double delta) {
 	// Here you should do all your game logic as if <delta> seconds have passed.
 	//AnimateCharacter(game, data->pienki, delta, 1.0);
+	CheckMask(game, data->mask->frame->bitmap);
 }
 
 void Gamestate_Tick(struct Game* game, struct GamestateResources* data) {
@@ -59,7 +60,9 @@ void Gamestate_ProcessEvent(struct Game* game, struct GamestateResources* data, 
 		// When there are no active gamestates, the engine will quit.
 	}
 	if (ev->type == ALLEGRO_EVENT_MOUSE_BUTTON_DOWN) {
+		if (!game->data->hover) { return; }
 		AnimateCharacter(game, data->pienki, 1.0, 1.0);
+		AnimateCharacter(game, data->mask, 1.0, 1.0);
 		data->counter++;
 		al_stop_sample_instance(data->pac);
 		al_play_sample_instance(data->pac);
@@ -97,6 +100,10 @@ void* Gamestate_Load(struct Game* game, void (*progress)(struct Game*)) {
 	RegisterSpritesheet(game, data->pienki, "pienki_myszka");
 	LoadSpritesheets(game, data->pienki, progress);
 
+	data->mask = CreateCharacter(game, "pienki");
+	RegisterSpritesheet(game, data->mask, "mask");
+	LoadSpritesheets(game, data->mask, progress);
+
 	return data;
 }
 
@@ -105,6 +112,7 @@ void Gamestate_Unload(struct Game* game, struct GamestateResources* data) {
 	// Good place for freeing all allocated memory and resources.
 	al_destroy_audio_stream(data->music);
 	DestroyCharacter(game, data->pienki);
+	DestroyCharacter(game, data->mask);
 	al_destroy_sample_instance(data->pac);
 	al_destroy_sample(data->sample);
 	free(data);

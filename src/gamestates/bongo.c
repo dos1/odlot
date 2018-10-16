@@ -38,8 +38,29 @@ struct GamestateResources {
 
 int Gamestate_ProgressCount = 7; // number of loading steps as reported by Gamestate_Load; 0 when missing
 
+static int GetBongo(struct Game* game, struct GamestateResources* data) {
+	int x = (int)(game->data->mouseX * 1920);
+	int y = (int)(game->data->mouseY * 1080);
+	int b = -1;
+	if ((x > 537) && (y > 150) && (x < 537 + 219) && (y < 160 + 76)) {
+		b = 0;
+	} else if ((x > 537) && (y > 313) && (x < 537 + 301) && (y < 313 + 125)) {
+		b = 1;
+	} else if ((x > 845) && (y > 441) && (x < 845 + 321) && (y < 441 + 130)) {
+		b = 2;
+	} else if ((x > 1135) && (y > 361) && (x < 1135 + 285) && (y < 361 + 111)) {
+		b = 3;
+	} else if ((x > 1101) && (y > 269) && (x < 1101 + 272) && (y < 269 + 103)) {
+		b = 4;
+	}
+	return b;
+}
+
 void Gamestate_Logic(struct Game* game, struct GamestateResources* data, double delta) {
 	// Here you should do all your game logic as if <delta> seconds have passed.
+	if (GetBongo(game, data) > -1) {
+		game->data->hover = true;
+	}
 }
 
 void Gamestate_Tick(struct Game* game, struct GamestateResources* data) {
@@ -96,20 +117,7 @@ void Gamestate_ProcessEvent(struct Game* game, struct GamestateResources* data, 
 		if (data->counter < 130) {
 			return;
 		}
-		int x = (int)(game->data->mouseX * 1920);
-		int y = (int)(game->data->mouseY * 1080);
-		int b = -1;
-		if ((x > 537) && (y > 150) && (x < 537 + 219) && (y < 160 + 76)) {
-			b = 0;
-		} else if ((x > 537) && (y > 313) && (x < 537 + 301) && (y < 313 + 125)) {
-			b = 1;
-		} else if ((x > 845) && (y > 441) && (x < 845 + 321) && (y < 441 + 130)) {
-			b = 2;
-		} else if ((x > 1135) && (y > 361) && (x < 1135 + 285) && (y < 361 + 111)) {
-			b = 3;
-		} else if ((x > 1101) && (y > 269) && (x < 1101 + 272) && (y < 269 + 103)) {
-			b = 4;
-		}
+		int b = GetBongo(game, data);
 		if (b >= 0) {
 			al_stop_sample_instance(data->bongo[b]);
 			al_play_sample_instance(data->bongo[b]);

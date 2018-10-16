@@ -25,6 +25,7 @@ struct GamestateResources {
 	// This struct is for every resource allocated and used by your gamestate.
 	// It gets created on load and then gets passed around to all other function calls.
 	struct Character* rzeczka;
+	ALLEGRO_BITMAP* mask;
 	ALLEGRO_AUDIO_STREAM* music;
 	ALLEGRO_SAMPLE_INSTANCE* sound;
 	ALLEGRO_SAMPLE* sample;
@@ -38,13 +39,14 @@ struct GamestateResources {
 	unsigned char fade;
 };
 
-int Gamestate_ProgressCount = 4; // number of loading steps as reported by Gamestate_Load; 0 when missing
+int Gamestate_ProgressCount = 5; // number of loading steps as reported by Gamestate_Load; 0 when missing
 
 void Gamestate_Logic(struct Game* game, struct GamestateResources* data, double delta) {
 	// Here you should do all your game logic as if <delta> seconds have passed.
 	if (data->state) {
 		AnimateCharacter(game, data->rzeczka, delta, 1.0);
 	}
+	CheckMask(game, data->mask);
 }
 
 void Gamestate_Tick(struct Game* game, struct GamestateResources* data) {
@@ -87,6 +89,7 @@ void Gamestate_ProcessEvent(struct Game* game, struct GamestateResources* data, 
 	}
 
 	if (ev->type == ALLEGRO_EVENT_MOUSE_BUTTON_DOWN) {
+		if (!game->data->hover) { return; }
 		data->state++;
 		al_play_sample_instance(data->sound);
 		HideMouse(game);
@@ -120,6 +123,9 @@ void* Gamestate_Load(struct Game* game, void (*progress)(struct Game*)) {
 	RegisterSpritesheet(game, data->rzeczka, "animacja_rzeka");
 	LoadSpritesheets(game, data->rzeczka, progress);
 	SelectSpritesheet(game, data->rzeczka, "-animacja_rzeka");
+	progress(game);
+
+	data->mask = al_load_bitmap(GetDataFilePath(game, "sprites/rzeczka/mask.webp"));
 
 	return data;
 }
@@ -131,6 +137,7 @@ void Gamestate_Unload(struct Game* game, struct GamestateResources* data) {
 	DestroyCharacter(game, data->rzeczka);
 	al_destroy_sample_instance(data->sound);
 	al_destroy_sample(data->sample);
+	al_destroy_bitmap(data->mask);
 	free(data);
 }
 

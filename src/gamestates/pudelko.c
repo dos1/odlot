@@ -25,6 +25,7 @@ struct GamestateResources {
 	// This struct is for every resource allocated and used by your gamestate.
 	// It gets created on load and then gets passed around to all other function calls.
 	struct Character* pudelko;
+	ALLEGRO_BITMAP* mask;
 	ALLEGRO_AUDIO_STREAM* music;
 	ALLEGRO_SAMPLE_INSTANCE* sound[3];
 	ALLEGRO_SAMPLE* sample[3];
@@ -34,11 +35,16 @@ struct GamestateResources {
 	int counter;
 };
 
-int Gamestate_ProgressCount = 9; // number of loading steps as reported by Gamestate_Load; 0 when missing
+int Gamestate_ProgressCount = 10; // number of loading steps as reported by Gamestate_Load; 0 when missing
 
 void Gamestate_Logic(struct Game* game, struct GamestateResources* data, double delta) {
 	// Here you should do all your game logic as if <delta> seconds have passed.
 	AnimateCharacter(game, data->pudelko, delta, 1.0);
+	if (data->pudelko->pos == 0 || data->pudelko->pos == data->pudelko->spritesheet->frameCount - 1) {
+		if (data->state < 3) {
+			CheckMask(game, data->mask);
+		}
+	}
 }
 
 void Gamestate_Tick(struct Game* game, struct GamestateResources* data) {
@@ -65,6 +71,8 @@ void Gamestate_ProcessEvent(struct Game* game, struct GamestateResources* data, 
 	}
 
 	if (ev->type == ALLEGRO_EVENT_MOUSE_BUTTON_DOWN) {
+		if (!game->data->hover) { return; }
+		if (data->pudelko->pos != 0 && data->pudelko->pos != data->pudelko->spritesheet->frameCount - 1) { return; }
 		data->state++;
 		if (data->state == 1) {
 			SelectSpritesheet(game, data->pudelko, "pudelko1");
@@ -116,7 +124,9 @@ void* Gamestate_Load(struct Game* game, void (*progress)(struct Game*)) {
 	RegisterSpritesheet(game, data->pudelko, "pudelko3");
 	LoadSpritesheets(game, data->pudelko, progress);
 	SelectSpritesheet(game, data->pudelko, "pudelko");
+	progress(game);
 
+	data->mask = al_load_bitmap(GetDataFilePath(game, "sprites/pudelko/mask.webp"));
 	return data;
 }
 
@@ -130,6 +140,7 @@ void Gamestate_Unload(struct Game* game, struct GamestateResources* data) {
 		al_destroy_sample_instance(data->sound[i]);
 		al_destroy_sample(data->sample[i]);
 	}
+	al_destroy_bitmap(data->mask);
 	free(data);
 }
 

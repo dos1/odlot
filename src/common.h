@@ -25,9 +25,12 @@ struct CommonResources {
 	bool first_load;
 	char* next;
 	bool cursor;
-	ALLEGRO_BITMAP* cursorbmp;
+	bool hover;
+	ALLEGRO_BITMAP *cursorbmp, *cursorhover;
 };
 
+void PreLogic(struct Game* game, double delta);
+void CheckMask(struct Game* game, ALLEGRO_BITMAP* bitmap);
 void DrawTexturedRectangle(float x1, float y1, float x2, float y2, ALLEGRO_COLOR color);
 struct CommonResources* CreateGameData(struct Game* game);
 void DestroyGameData(struct Game* game);

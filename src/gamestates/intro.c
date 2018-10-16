@@ -84,6 +84,10 @@ void Gamestate_Logic(struct Game* game, struct GamestateResources* data, double 
 	if (data->unlocked) {
 		AnimateCharacter(game, data->grzebien, delta, 2.2);
 	}
+
+	if (data->distance == 0) {
+		game->data->hover = true;
+	}
 }
 
 void Gamestate_Tick(struct Game* game, struct GamestateResources* data) {
@@ -124,6 +128,9 @@ void Gamestate_ProcessEvent(struct Game* game, struct GamestateResources* data, 
 
 	if (ev->type == ALLEGRO_EVENT_MOUSE_BUTTON_DOWN) {
 		if (data->unlocked) {
+			return;
+		}
+		if (data->distance != 0) {
 			return;
 		}
 		al_set_audio_stream_playing(data->rosnie, true);

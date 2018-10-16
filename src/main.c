@@ -67,6 +67,7 @@ int main(int argc, char** argv) {
 	game->handlers.event = GlobalEventHandler;
 	game->handlers.destroy = DestroyGameData;
 	game->handlers.compositor = Compositor;
+	game->handlers.prelogic = PreLogic;
 
 	al_hide_mouse_cursor(game->display);
 
