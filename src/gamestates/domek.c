@@ -30,6 +30,7 @@ struct GamestateResources {
 	ALLEGRO_VIDEO* video;
 	int counter;
 	bool playing;
+	bool released;
 };
 
 int Gamestate_ProgressCount = 4; // number of loading steps as reported by Gamestate_Load; 0 when missing
@@ -37,7 +38,8 @@ int Gamestate_ProgressCount = 4; // number of loading steps as reported by Games
 void Gamestate_Logic(struct Game* game, struct GamestateResources* data, double delta) {
 	// Here you should do all your game logic as if <delta> seconds have passed.
 	CheckMask(game, data->mask);
-	if (al_get_video_position(data->video, ALLEGRO_VIDEO_POSITION_ACTUAL) >= 15) {
+	double pos = al_get_video_position(data->video, ALLEGRO_VIDEO_POSITION_ACTUAL);
+	if (pos >= 15 || (data->released && pos >= 4)) {
 		game->data->next = strdup("rave");
 		SwitchCurrentGamestate(game, "myszka");
 	}
@@ -70,12 +72,11 @@ void Gamestate_ProcessEvent(struct Game* game, struct GamestateResources* data, 
 		al_set_video_playing(data->video, true);
 		data->playing = true;
 		HideMouse(game);
-		al_set_sample_instance_gain(data->sound, 2.0);
+		al_set_sample_instance_gain(data->sound, 3.0);
 	}
 	if (ev->type == ALLEGRO_EVENT_MOUSE_BUTTON_UP) {
 		if (!data->playing) { return; }
-		game->data->next = strdup("rave");
-		SwitchCurrentGamestate(game, "myszka");
+		data->released = true;
 	}
 }
 
@@ -122,6 +123,7 @@ void Gamestate_Start(struct Game* game, struct GamestateResources* data) {
 	ShowMouse(game);
 	data->counter = 0;
 	data->playing = false;
+	data->released = false;
 	al_play_sample_instance(data->sound);
 	al_start_video(data->video, game->audio.fx);
 	al_set_video_playing(data->video, false);
