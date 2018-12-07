@@ -66,8 +66,9 @@ int main(int argc, char** argv) {
 	game->show_loading_on_launch = true;
 	game->handlers.event = GlobalEventHandler;
 	game->handlers.destroy = DestroyGameData;
-	game->handlers.compositor = Compositor;
 	game->handlers.prelogic = PreLogic;
+
+	EnableCompositor(game, Compositor);
 
 	al_hide_mouse_cursor(game->display);
 

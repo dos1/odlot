@@ -123,7 +123,7 @@ void* Gamestate_Load(struct Game* game, void (*progress)(struct Game*)) {
 	struct GamestateResources* data = calloc(1, sizeof(struct GamestateResources));
 	progress(game); // report that we progressed with the loading, so the engine can move a progress bar
 
-	data->music = al_load_audio_stream(GetDataFilePath(game, rand() % 2 ? "przejscie.flac" : "przejscie2.flac"), 4, 2048);
+	data->music = al_load_audio_stream(GetDataFilePath(game, (rand() % 2) ? "przejscie.flac" : "przejscie2.flac"), 4, 2048);
 	al_set_audio_stream_playing(data->music, false);
 	al_attach_audio_stream_to_mixer(data->music, game->audio.music);
 	return data;

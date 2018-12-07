@@ -61,28 +61,18 @@ void DrawTexturedRectangle(float x1, float y1, float x2, float y2, ALLEGRO_COLOR
 
 void Compositor(struct Game* game, struct Gamestate* gamestates) {
 	struct Gamestate* tmp = gamestates;
-	int counter = 0;
-	while (tmp) {
-		if ((tmp->loaded) && (tmp->started)) {
-			counter++;
-		}
-		tmp = tmp->next;
-	}
-	tmp = gamestates;
+	ClearToColor(game, al_map_rgb(0, 0, 0));
 
-	if (counter == 0) {
-		al_clear_to_color(al_map_rgb(0, 0, 0));
-		al_hold_bitmap_drawing(false);
-		al_use_shader(game->data->grain);
-		al_set_shader_float("time", al_get_time()); //data->blink_counter/3600.0);
-		DrawTexturedRectangle(0, 0, game->_priv.clip_rect.w, game->_priv.clip_rect.h, al_map_rgb(0, 0, 0));
+	al_use_shader(game->data->grain);
+	al_set_shader_float("time", game->time);
+
+	if (game->_priv.loading.shown) {
+		al_draw_bitmap(game->loading_fb, game->_priv.clip_rect.x, game->_priv.clip_rect.y, 0);
 		al_use_shader(NULL);
 		return;
 	}
 
 	while (tmp) {
-		al_use_shader(game->data->grain);
-		al_set_shader_float("time", al_get_time()); //data->blink_counter/3600.0);
 		if ((tmp->loaded) && (tmp->started)) {
 			float randx = (rand() / (double)RAND_MAX) * 3.0;
 			float randy = (rand() / (double)RAND_MAX) * 3.0;
@@ -93,12 +83,12 @@ void Compositor(struct Game* game, struct Gamestate* gamestates) {
 
 			float color = 1.0 + (rand() / (double)RAND_MAX) * 0.01 - 0.005;
 
-			al_draw_tinted_scaled_rotated_bitmap(tmp->fb, al_map_rgba_f(color, color, color, color), al_get_bitmap_width(tmp->fb) / 2.0, al_get_bitmap_height(tmp->fb) / 2.0,
-				game->_priv.clip_rect.w / 2.0 + randx, game->_priv.clip_rect.h / 2.0 + randy, game->_priv.clip_rect.w / (double)al_get_bitmap_width(tmp->fb) * 1.01, game->_priv.clip_rect.h / (double)al_get_bitmap_height(tmp->fb) * 1.01, 0.0, 0);
+			al_draw_tinted_scaled_rotated_bitmap(tmp->fb, al_map_rgba_f(color, color, color, color), 0, 0,
+				game->_priv.clip_rect.x + randx, game->_priv.clip_rect.y + randy, game->_priv.clip_rect.w / (double)al_get_bitmap_width(tmp->fb) * 1.01, game->_priv.clip_rect.h / (double)al_get_bitmap_height(tmp->fb) * 1.01, 0.0, 0);
 		}
-		al_use_shader(NULL);
 		tmp = tmp->next;
 	}
+	al_use_shader(NULL);
 
 	if (game->data->cursor) {
 		al_draw_scaled_rotated_bitmap(game->data->hover ? game->data->cursorhover : game->data->cursorbmp, 130, 165, game->data->mouseX * game->_priv.clip_rect.w, game->data->mouseY * game->_priv.clip_rect.h, game->_priv.clip_rect.w / (double)game->viewport.width * 0.1, game->_priv.clip_rect.h / (double)game->viewport.height * 0.1, 0, 0);
