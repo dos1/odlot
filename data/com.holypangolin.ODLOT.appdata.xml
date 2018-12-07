@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Copyright 2018 Sebastian Krzyszkowiak <dos@dosowisko.net> -->
+<component type="desktop-application">
+  <id>com.holypangolin.ODLOT</id>
+  <metadata_license>FSFAP</metadata_license>
+  <project_license>GPL-3.0+</project_license>
+  <name>ODLOT</name>
+  <summary>A weird game about taking off.</summary>
+
+  <description>
+    <p>
+      odlot (Polish, IPA: /ˈɔ.dlɔt/)
+      1. «moving away by air, departure (of an aeroplane), taking off»
+      2. colloquially «state of intoxication caused by alcohol or drugs»
+      3. colloquially «something very attractive»
+    </p>
+  </description>
+
+  <launchable type="desktop-id">odlot.desktop</launchable>
+
+  <developer_name>Holy Pangolin</developer_name>
+
+  <update_contact>dos_AT_dosowisko.net</update_contact>
+
+  <provides>
+    <binary>odlot</binary>
+  </provides>
+
+</component>
