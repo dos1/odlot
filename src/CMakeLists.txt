@@ -7,7 +7,6 @@ set(EXECUTABLE_SRC_LIST "main.c")
 if(MINGW)
     # resource compilation for MinGW
     set(EXECUTABLE_SRC_LIST ${EXECUTABLE_SRC_LIST} ${CMAKE_SOURCE_DIR}/data/icons/icon.rc)
-    set(LINK_FLAGS -Wl,-subsystem,windows)
 endif(MINGW)
 
 if (APPLE)

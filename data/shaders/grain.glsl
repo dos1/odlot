@@ -57,21 +57,19 @@ void main() {
     #if SRGB
     color = pow(color, vec4(2.2));
     #endif
-    
+
     float t = time * float(SPEED);
     float seed = dot(uv, vec2(12.9898, 78.233));
     float noise = fract(sin(seed) * 43758.5453 + t);
     noise = gaussian(noise, float(MEAN), float(VARIANCE) * float(VARIANCE));
-    
+
     #if SHOW_NOISE
     color = vec4(noise);
-    #else    
-    // Ignore these mouse stuff if you're porting this
-    // and just use an arbitrary intensity value.
+    #else
     float w = float(INTENSITY);
-	
+
     vec3 grain = vec3(noise) * (1.0 - color.rgb);
-    
+
     #if BLEND_MODE == 0
     color.rgb += grain * w;
     #elif BLEND_MODE == 1
@@ -83,12 +81,12 @@ void main() {
     #elif BLEND_MODE == 4
     color.rgb = max(color.rgb, grain * w);
     #endif
-        
+
     #if SRGB
     color = pow(color, vec4(1.0 / 2.2));
     #endif
     #endif
-    
+
     gl_FragColor = color;
 }
 

@@ -147,6 +147,9 @@ struct CommonResources* CreateGameData(struct Game* game) {
 }
 
 void DestroyGameData(struct Game* game) {
+	if (game->data->next) {
+		free(game->data->next);
+	}
 	DestroyShader(game, game->data->grain);
 	al_destroy_bitmap(game->data->cursorbmp);
 	al_destroy_bitmap(game->data->cursorhover);
