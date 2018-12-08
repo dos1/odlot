@@ -29,6 +29,7 @@ struct CommonResources {
 	ALLEGRO_BITMAP *cursorbmp, *cursorhover;
 };
 
+void SwitchScene(struct Game* game, char* name);
 void PreLogic(struct Game* game, double delta);
 void CheckMask(struct Game* game, ALLEGRO_BITMAP* bitmap);
 void DrawTexturedRectangle(float x1, float y1, float x2, float y2, ALLEGRO_COLOR color);

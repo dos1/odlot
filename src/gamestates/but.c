@@ -49,8 +49,7 @@ void Gamestate_Draw(struct Game* game, struct GamestateResources* data) {
 static CharacterCallback(ButEnd) {
 	//struct GamestateResources* d = data;
 	if (new&& new != old && strcmp(new->name, "blank") == 0) {
-		game->data->next = strdup("bongo");
-		SwitchCurrentGamestate(game, "myszka");
+		SwitchScene(game, "bongo");
 	}
 }
 

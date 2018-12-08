@@ -21,6 +21,15 @@
 #include "common.h"
 #include <libsuperderpy.h>
 
+void SwitchScene(struct Game* game, char* name) {
+	if (game->data->next) {
+		free(game->data->next);
+	}
+	game->data->next = strdup(name);
+	LoadGamestate(game, name);
+	SwitchCurrentGamestate(game, "myszka");
+}
+
 void PreLogic(struct Game* game, double delta) {
 	game->data->hover = false;
 }

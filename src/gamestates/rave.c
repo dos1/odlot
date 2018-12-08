@@ -49,8 +49,7 @@ void Gamestate_Tick(struct Game* game, struct GamestateResources* data) {
 	if (data->state) {
 		data->counter++;
 		if (data->counter == 60 * 5) {
-			game->data->next = strdup("pudelko");
-			SwitchCurrentGamestate(game, "myszka");
+			SwitchScene(game, "pudelko");
 		}
 	}
 }

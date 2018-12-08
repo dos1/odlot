@@ -50,8 +50,7 @@ void Gamestate_Tick(struct Game* game, struct GamestateResources* data) {
 		al_play_sample_instance(data->pac);
 	}
 	if (data->counter == (int)(3.5 * 60)) {
-		game->data->next = strdup("rzeczka");
-		SwitchCurrentGamestate(game, "myszka");
+		SwitchScene(game, "rzeczka");
 	}
 }
 

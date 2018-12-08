@@ -69,8 +69,7 @@ void Gamestate_Tick(struct Game* game, struct GamestateResources* data) {
 		}
 	}
 	if (data->counter >= 16 * 60) {
-		game->data->next = strdup("but");
-		SwitchCurrentGamestate(game, "myszka");
+		SwitchScene(game, "but");
 	}
 }
 

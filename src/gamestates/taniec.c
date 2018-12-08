@@ -51,8 +51,7 @@ void Gamestate_Tick(struct Game* game, struct GamestateResources* data) {
 	data->counter++;
 	float pos = al_get_audio_stream_position_secs(data->taniec) / al_get_audio_stream_length_secs(data->taniec);
 	if (pos >= 1.0) {
-		game->data->next = strdup("domek");
-		SwitchCurrentGamestate(game, "myszka");
+		SwitchScene(game, "domek");
 	}
 	if (data->counter % 20 == 0) {
 		SetCharacterPosition(game, data->niebieski, rand() / (double)RAND_MAX * 1920, rand() / (double)RAND_MAX * 1080, rand());

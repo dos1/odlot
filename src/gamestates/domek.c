@@ -40,8 +40,7 @@ void Gamestate_Logic(struct Game* game, struct GamestateResources* data, double 
 	CheckMask(game, data->mask);
 	double pos = al_get_video_position(data->video, ALLEGRO_VIDEO_POSITION_ACTUAL);
 	if (pos >= 15 || (data->released && pos >= 4)) {
-		game->data->next = strdup("rave");
-		SwitchCurrentGamestate(game, "myszka");
+		SwitchScene(game, "rave");
 	}
 }
 
