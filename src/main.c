@@ -39,7 +39,6 @@ int main(int argc, char** argv) {
 
 	struct Game* game = libsuperderpy_init(argc, argv, LIBSUPERDERPY_GAMENAME, (struct Viewport){1920, 1080});
 	if (!game) { return 1; }
-
 	al_set_window_title(game->display, LIBSUPERDERPY_GAMENAME_PRETTY);
 
 	LoadGamestate(game, "myszka");
