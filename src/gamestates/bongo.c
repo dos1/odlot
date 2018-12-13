@@ -61,6 +61,12 @@ void Gamestate_Logic(struct Game* game, struct GamestateResources* data, double 
 	if (GetBongo(game, data) > -1) {
 		game->data->hover = true;
 	}
+
+	ALLEGRO_KEYBOARD_STATE state;
+	al_get_keyboard_state(&state);
+	if (al_key_down(&state, ALLEGRO_KEY_A) && al_key_down(&state, ALLEGRO_KEY_S) && al_key_down(&state, ALLEGRO_KEY_D)) {
+		SwitchCurrentGamestate(game, "taniec");
+	}
 }
 
 void Gamestate_Tick(struct Game* game, struct GamestateResources* data) {
