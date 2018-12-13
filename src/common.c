@@ -83,8 +83,8 @@ void Compositor(struct Game* game, struct Gamestate* gamestates) {
 
 	while (tmp) {
 		if ((tmp->loaded) && (tmp->started)) {
-			float randx = (rand() / (double)RAND_MAX) * 3.0;
-			float randy = (rand() / (double)RAND_MAX) * 3.0;
+			float randx = (rand() / (double)RAND_MAX) * 3.0 * game->_priv.clip_rect.w / 3200.0;
+			float randy = (rand() / (double)RAND_MAX) * 3.0 * game->_priv.clip_rect.h / 1800.0;
 			if (rand() % 200) {
 				randx = 0;
 				randy = 0;
