@@ -100,7 +100,7 @@ void Compositor(struct Game* game, struct Gamestate* gamestates) {
 	al_use_shader(NULL);
 
 	if (game->data->cursor) {
-		al_draw_scaled_rotated_bitmap(game->data->hover ? game->data->cursorhover : game->data->cursorbmp, 130, 165, game->data->mouseX * game->_priv.clip_rect.w, game->data->mouseY * game->_priv.clip_rect.h, game->_priv.clip_rect.w / (double)game->viewport.width * 0.1, game->_priv.clip_rect.h / (double)game->viewport.height * 0.1, 0, 0);
+		al_draw_scaled_rotated_bitmap(game->data->hover ? game->data->cursorhover : game->data->cursorbmp, 130, 165, game->data->mouseX * game->_priv.clip_rect.w + game->_priv.clip_rect.x, game->data->mouseY * game->_priv.clip_rect.h + game->_priv.clip_rect.y, game->_priv.clip_rect.w / (double)game->viewport.width * 0.1, game->_priv.clip_rect.h / (double)game->viewport.height * 0.1, 0, 0);
 	}
 }
 
