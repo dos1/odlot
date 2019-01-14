@@ -29,6 +29,8 @@ struct GamestateResources {
 	ALLEGRO_AUDIO_STREAM* music;
 	ALLEGRO_SAMPLE_INSTANCE* sound;
 	ALLEGRO_SAMPLE* sample;
+	ALLEGRO_BITMAP* myszka;
+	ALLEGRO_FONT* font;
 
 	int state;
 
@@ -36,10 +38,12 @@ struct GamestateResources {
 
 	int oldpos;
 
+	float pos, angle;
+
 	unsigned char fade;
 };
 
-int Gamestate_ProgressCount = 5; // number of loading steps as reported by Gamestate_Load; 0 when missing
+int Gamestate_ProgressCount = 6; // number of loading steps as reported by Gamestate_Load; 0 when missing
 
 void Gamestate_Logic(struct Game* game, struct GamestateResources* data, double delta) {
 	// Here you should do all your game logic as if <delta> seconds have passed.
@@ -66,11 +70,15 @@ void Gamestate_Tick(struct Game* game, struct GamestateResources* data) {
 	}
 
 	if (data->counter > 5 * 60) {
-		al_set_audio_stream_gain(data->music, al_get_audio_stream_gain(data->music) - 0.001);
-		al_set_sample_instance_gain(data->sound, al_get_sample_instance_gain(data->sound) - 0.001);
+		al_set_audio_stream_gain(data->music, al_get_audio_stream_gain(data->music) - 0.000875);
+		al_set_sample_instance_gain(data->sound, al_get_sample_instance_gain(data->sound) - 0.000875);
 	}
 	if (al_get_audio_stream_gain(data->music) <= 0) {
 		UnloadAllGamestates(game);
+	}
+	if (data->counter % 6 == 0) {
+		data->pos = (data->counter - 12 * 60) / 360.0;
+		data->angle = rand() / (double)RAND_MAX;
 	}
 }
 
@@ -78,6 +86,30 @@ void Gamestate_Draw(struct Game* game, struct GamestateResources* data) {
 	// Draw everything to the screen here.
 	data->rzeczka->tint = al_map_rgba(data->fade, data->fade, data->fade, data->fade);
 	DrawCharacter(game, data->rzeczka);
+
+	al_draw_scaled_rotated_bitmap(data->myszka, al_get_bitmap_width(data->myszka) / 2.0, al_get_bitmap_height(data->myszka) / 2.0, data->pos * game->viewport.width, game->viewport.height - 140, 0.25, 0.25, data->angle * 0.2 - 0.1, 0);
+
+	int padding = 48;
+
+	if (data->counter > 19 * 60) {
+		al_draw_text(data->font, al_map_rgb(255, 255, 255), padding, padding, ALLEGRO_ALIGN_LEFT, "The game has been created at the Geek Jam");
+		al_draw_text(data->font, al_map_rgb(255, 255, 255), padding, padding + padding, ALLEGRO_ALIGN_LEFT, "during the Game Industry Conference 2018.");
+	} else if (data->counter > 15 * 60) {
+		al_draw_text(data->font, al_map_rgb(255, 255, 255), padding, padding, ALLEGRO_ALIGN_LEFT, "Physical assets:");
+		al_draw_text(data->font, al_map_rgb(255, 255, 255), padding, padding + padding, ALLEGRO_ALIGN_LEFT, "Fundacja Pogotowie Społeczne");
+		al_draw_text(data->font, al_map_rgb(255, 255, 255), padding, padding + padding + padding, ALLEGRO_ALIGN_LEFT, "Handmade during a set of workshops for the socially excluded.");
+	} else if (data->counter > 12 * 60) {
+		al_draw_text(data->font, al_map_rgb(255, 255, 255), padding, padding, ALLEGRO_ALIGN_LEFT, "Sound samples:");
+		al_draw_text(data->font, al_map_rgb(255, 255, 255), padding, padding + padding, ALLEGRO_ALIGN_LEFT, "Polish Radio Experimental Studio");
+		al_draw_text(data->font, al_map_rgb(255, 255, 255), padding, padding + padding + padding, ALLEGRO_ALIGN_LEFT, "(published by Adam Mickiewicz Institute)");
+	} else if (data->counter > 9 * 60) {
+		al_draw_text(data->font, al_map_rgb(255, 255, 255), padding, padding, ALLEGRO_ALIGN_LEFT, "Made with libsuperderpy engine");
+		al_draw_text(data->font, al_map_rgb(255, 255, 255), padding, padding + padding, ALLEGRO_ALIGN_LEFT, "and Allegro 5 library.");
+	} else if (data->counter > 6 * 60) {
+		al_draw_text(data->font, al_map_rgb(255, 255, 255), padding, padding, ALLEGRO_ALIGN_LEFT, "by Holy Pangolin");
+		al_draw_text(data->font, al_map_rgb(255, 255, 255), padding, padding + padding + padding, ALLEGRO_ALIGN_LEFT, "Agata Nawrot");
+		al_draw_text(data->font, al_map_rgb(255, 255, 255), padding, padding + padding + padding + padding, ALLEGRO_ALIGN_LEFT, "Sebastian Krzyszkowiak");
+	}
 }
 
 void Gamestate_ProcessEvent(struct Game* game, struct GamestateResources* data, ALLEGRO_EVENT* ev) {
@@ -104,7 +136,11 @@ void* Gamestate_Load(struct Game* game, void (*progress)(struct Game*)) {
 	// create VBOs, etc. do it in Gamestate_PostLoad.
 
 	struct GamestateResources* data = calloc(1, sizeof(struct GamestateResources));
+	data->myszka = al_load_bitmap(GetDataFilePath(game, "myszki/prawo2.webp"));
 	progress(game); // report that we progressed with the loading, so the engine can move a progress bar
+
+	data->font = al_load_font(GetDataFilePath(game, "fonts/DejaVuSansMono.ttf"), 42, 0);
+	progress(game);
 
 	data->music = al_load_audio_stream(GetDataFilePath(game, "rzeczka.flac"), 4, 2048);
 	al_set_audio_stream_playing(data->music, false);
@@ -138,6 +174,7 @@ void Gamestate_Unload(struct Game* game, struct GamestateResources* data) {
 	al_destroy_sample_instance(data->sound);
 	al_destroy_sample(data->sample);
 	al_destroy_bitmap(data->mask);
+	al_destroy_bitmap(data->myszka);
 	free(data);
 }
 
@@ -146,15 +183,17 @@ void Gamestate_Start(struct Game* game, struct GamestateResources* data) {
 	// playing music etc.
 	ShowMouse(game);
 	al_set_audio_stream_playing(data->music, true);
-	SetCharacterPosition(game, data->rzeczka, 1920 / 2.0, 1080 / 2.0, 0);
+	SetCharacterPosition(game, data->rzeczka, game->viewport.width / 2.0, game->viewport.height / 2.0, 0);
 	data->counter = 0;
 	data->state = 0;
 	data->fade = 255;
+	data->pos = -9999;
 }
 
 void Gamestate_Stop(struct Game* game, struct GamestateResources* data) {
 	// Called when gamestate gets stopped. Stop timers, music etc. here.
 	al_set_audio_stream_playing(data->music, false);
+	al_stop_sample_instance(data->sound);
 }
 
 // Optional endpoints:
